@@ -1,12 +1,17 @@
 import React from "react";
 import { useRef, useState, useEffect } from "react";
-import MyButton from "./MyButton.jsx";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, IconButton, Typography } from "@mui/material";
 import { orange, red } from "@mui/material/colors";
+import SettingsIcon from "@mui/icons-material/Settings";
+import { useNavigate } from "react-router-dom";
+import SettingsModal from "./SettingsModal";
 
 const Timer = () => {
   const [timeLeft, setTimeLeft] = useState(1500);
   const [isActive, setIsActive] = useState(null);
+  const [isBreak, setIsBreak] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(true);
+  const navigate = useNavigate();
 
   const intervalIdRef = useRef(null);
 
@@ -59,11 +64,25 @@ const Timer = () => {
 
   const toggle = () => {
     setIsActive(!isActive);
+    setIsDisabled(false);
   };
 
   const reset = () => {
     setTimeLeft(1500);
     setIsActive(false);
+  };
+
+  const done = () => {
+    setTimeLeft(300);
+    setIsActive(false);
+    setIsBreak(!isBreak);
+  };
+
+  const skip = () => {
+    setTimeLeft(1500);
+    setIsActive(false);
+    setIsBreak(false);
+    setIsDisabled(true);
   };
 
   const formatTime = (timeLeft) => {
@@ -76,18 +95,44 @@ const Timer = () => {
 
   return (
     <Box width={750} color={orange} border={1} marginTop={5} marginBottom={5}>
+      <SettingsModal />
+
       <Box
         sx={{ display: "flex", justifyContent: "center" }}
-        height={150}
+        height={100}
         alignItems={"center"}
+        border={0}
       >
-        <Typography fontSize={100} style={{ color: "black" }}>
+        <Typography fontSize={100} sx={{ color: "black" }}>
           {formatTime(timeLeft)}
         </Typography>
       </Box>
-      <Box className="button" style={{ marginTop: 5, marginBottom: 5 }}>
+      <Box
+        border={0}
+        sx={{
+          display: "flex",
+          marginTop: 3,
+          marginBottom: 5,
+          justifyContent: "center",
+        }}
+      >
         {isActive ? (
-          <Button onClick={toggle}>Stop</Button>
+          <Button
+            onClick={toggle}
+            style={{
+              color: "#232946",
+              paddingLeft: 50,
+              paddingRight: 50,
+              borderWidth: 1,
+              marginRight: 15,
+              marginLeft: 15,
+
+              borderColor: "black",
+            }}
+            variant="outlined"
+          >
+            PAUSE
+          </Button>
         ) : (
           <Button
             onClick={toggle}
@@ -96,8 +141,8 @@ const Timer = () => {
               paddingLeft: 50,
               paddingRight: 50,
               borderWidth: 1,
-              marginRight: 10,
-              marginLeft: 10,
+              marginRight: 15,
+              marginLeft: 15,
 
               borderColor: "black",
             }}
@@ -106,21 +151,65 @@ const Timer = () => {
             Start
           </Button>
         )}
-        <Button
-          onClick={reset}
-          style={{
-            color: "#232946",
-            paddingLeft: 50,
-            paddingRight: 50,
-            borderWidth: 1,
-            marginRight: 10,
-            marginLeft: 10,
-            borderColor: "black",
-          }}
-          variant="outlined"
-        >
-          Reset
-        </Button>
+
+        {(() => {
+          if (isBreak) {
+            return (
+              <Button
+                onClick={skip}
+                style={{
+                  color: "#232946",
+                  paddingLeft: 50,
+                  paddingRight: 50,
+                  borderWidth: 1,
+                  marginRight: 15,
+                  marginLeft: 75,
+                  borderColor: "black",
+                }}
+                variant="outlined"
+              >
+                SKIP
+              </Button>
+            );
+          } else if (isActive) {
+            return (
+              <Button
+                onClick={reset}
+                style={{
+                  color: "#232946",
+                  paddingLeft: 50,
+                  paddingRight: 50,
+                  borderWidth: 1,
+                  marginRight: 15,
+                  marginLeft: 75,
+                  borderColor: "black",
+                }}
+                variant="outlined"
+              >
+                STOP
+              </Button>
+            );
+          } else {
+            return (
+              <Button
+                disabled={isDisabled}
+                onClick={done}
+                style={{
+                  color: "#232946",
+                  paddingLeft: 50,
+                  paddingRight: 50,
+                  borderWidth: 1,
+                  marginRight: 15,
+                  marginLeft: 75,
+                  borderColor: "black",
+                }}
+                variant="outlined"
+              >
+                DONE
+              </Button>
+            );
+          }
+        })()}
       </Box>
     </Box>
   );

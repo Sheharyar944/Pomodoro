@@ -6,6 +6,7 @@ import { Box, Button } from "@mui/material";
 import useIsLoggedIn from "../hooks/useIsLoggedIn.jsx";
 import useLogout from "../hooks/useLogout.jsx";
 import { AuthContext } from "./AuthContext.jsx";
+import SettingsIcon from "@mui/icons-material/Settings";
 
 const Root = () => {
   const navigate = useNavigate();
