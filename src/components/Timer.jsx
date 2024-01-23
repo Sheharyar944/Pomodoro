@@ -5,12 +5,14 @@ import { orange, red } from "@mui/material/colors";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { useNavigate } from "react-router-dom";
 import SettingsModal from "./SettingsModal";
+import AddIcon from "@mui/icons-material/Add";
 
 const Timer = () => {
   const [timeLeft, setTimeLeft] = useState(1500);
   const [isActive, setIsActive] = useState(null);
   const [isBreak, setIsBreak] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
+  const [isLongBreak, setIsLongBreak] = useState(1);
   const navigate = useNavigate();
 
   const intervalIdRef = useRef(null);
@@ -70,19 +72,37 @@ const Timer = () => {
   const reset = () => {
     setTimeLeft(1500);
     setIsActive(false);
+    setIsDisabled(true);
   };
 
   const done = () => {
-    setTimeLeft(300);
+    if (isLongBreak === 4) {
+      setTimeLeft(900);
+      setIsLongBreak(1);
+    } else {
+      setTimeLeft(300);
+      setIsLongBreak(isLongBreak + 1);
+    }
     setIsActive(false);
     setIsBreak(!isBreak);
   };
 
+  const longBreakOrNot = () => {
+    if (isLongBreak.count === 4) {
+      setIsLongBreak((prevState) => {
+        return { ...prevState, state: !prevState.state };
+      });
+    }
+  };
   const skip = () => {
     setTimeLeft(1500);
     setIsActive(false);
     setIsBreak(false);
     setIsDisabled(true);
+  };
+
+  const add = () => {
+    setTimeLeft(timeLeft + 60);
   };
 
   const formatTime = (timeLeft) => {
@@ -95,7 +115,24 @@ const Timer = () => {
 
   return (
     <Box width={750} color={orange} border={1} marginTop={5} marginBottom={5}>
-      <SettingsModal />
+      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+        <SettingsModal />
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          {isBreak ? (
+            <Typography variant="body1" color="initial">
+              Short Break
+            </Typography>
+          ) : (
+            <Typography variant="body1" color="initial">
+              Pomodoro {isLongBreak}
+            </Typography>
+          )}
+
+          <IconButton onClick={add} sx={{ color: "black" }}>
+            <AddIcon />
+          </IconButton>
+        </Box>
+      </Box>
 
       <Box
         sx={{ display: "flex", justifyContent: "center" }}
@@ -192,10 +229,12 @@ const Timer = () => {
           } else {
             return (
               <Button
+                aria-disabled={isDisabled}
                 disabled={isDisabled}
                 onClick={done}
+                sx={{ cursor: isDisabled ? "not-allowed" : "pointer" }}
                 style={{
-                  color: "#232946",
+                  color: "black",
                   paddingLeft: 50,
                   paddingRight: 50,
                   borderWidth: 1,
