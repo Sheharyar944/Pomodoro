@@ -1,11 +1,11 @@
 import React, { useContext, useState } from "react";
 import Timer from "../components/Timer.jsx";
-import Task from "../components/Task.jsx";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 
 import { AuthContext } from "../components/AuthContext.jsx";
 import { Button } from "@mui/material";
+import SettingTabs from "../components/SettingTabs.jsx";
 
 const Home = () => {
   const { user, userDetails } = useContext(AuthContext);
@@ -40,6 +40,8 @@ const Home = () => {
   return (
     <Box display="flex" flexDirection="column" alignItems="center">
       <Timer />
+      {/* <SettingTabs /> */}
+
       <Box
         sx={{
           width: 500,

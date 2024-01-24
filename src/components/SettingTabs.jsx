@@ -1,6 +1,7 @@
-import React, { useContext, useEffect, useState } from "react";
+import React from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+
 import Modal from "@mui/material/Modal";
 import { Divider, IconButton, TextField } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -9,7 +10,6 @@ import PropTypes from "prop-types";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
-import { AuthContext } from "./AuthContext";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -23,7 +23,11 @@ function CustomTabPanel(props) {
       {...other}
     >
       {value === index && (
-        <Box sx={{ p: 3 }}>
+        <Box
+          sx={{
+            p: 3, // changed to hidden
+          }}
+        >
           <Typography>{children}</Typography>
         </Box>
       )}
@@ -56,66 +60,17 @@ const style = {
   p: 4,
 };
 
-const SettingsModal = ({
-  pomodoroTime,
-  setPomodoroTime,
-  shortBreakTime,
-  setShortBreakTime,
-  longBreakTime,
-  setLongBreakTime,
-  setTimeLeft,
-}) => {
+const SettingTabs = () => {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
-  const handleClose = () => {
-    setOpen(false);
-    setTimeLeft(pomodoro);
-    setPomodoroTime(pomodoro);
-    setShortBreakTime(shortBreak);
-    setLongBreakTime(longBreak);
-  };
+  const handleClose = () => setOpen(false);
 
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-  //////////////////////////////////////////////////////////////
-  const [pomodoro, setPomodoro] = useState(0);
-  const [shortBreak, setshortBreak] = useState(0);
-  const [longBreak, setlongBreak] = useState(0);
 
-  useEffect(
-    () => {
-      setPomodoro(pomodoroTime);
-      setshortBreak(shortBreakTime);
-      setlongBreak(longBreakTime);
-    },
-    [pomodoroTime],
-    [shortBreakTime],
-    [longBreakTime]
-  );
-
-  const handlePomodoroChange = (e) => {
-    setPomodoro(e.target.value);
-  };
-  const handleShortBreakTimeChange = (e) => {
-    setshortBreak(e.target.value);
-  };
-  const handleLongBreakTimeChange = (e) => {
-    setlongBreak(e.target.value);
-  };
-
-  //   const handleKeyDown = (e) => {
-  //     if (e.key === "Enter") {
-  //       getTimer(inputValue);
-  //     }
-  //   };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-  };
-  //     /////////////////////////////////////////
   return (
     <div>
       <IconButton
@@ -132,40 +87,46 @@ const SettingsModal = ({
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <Box sx={{ width: "100%" }}>
-            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-              <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
-                <Box sx={{ flex: 1 }}></Box>
-                <Box sx={{ flex: 1 }} borderTop={1}></Box>
+          {/* //fixed header box */}
+          <Box>
+            <Box sx={{ width: "100%" }}>
+              <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
+                  <Box sx={{ flex: 1 }}></Box>
+                  <Box sx={{ flex: 1 }} borderTop={1}></Box>
+                </Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    padding: "0 10px 0 10px",
+                  }}
+                >
+                  <Typography variant="body1" color="initial">
+                    PREFERENCES
+                  </Typography>
+                </Box>
+                <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
+                  <Box sx={{ flex: 1 }}></Box>
+                  <Box borderTop={1} sx={{ flex: 1 }}></Box>
+                </Box>
               </Box>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  padding: "0 10px 0 10px",
-                }}
-              >
-                <Typography variant="body1" color="initial">
-                  PREFERENCES
-                </Typography>
-              </Box>
-              <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
-                <Box sx={{ flex: 1 }}></Box>
-                <Box borderTop={1} sx={{ flex: 1 }}></Box>
+              <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                <Tabs
+                  value={value}
+                  onChange={handleChange}
+                  aria-label="basic tabs example"
+                  variant="fullWidth"
+                >
+                  <Tab label="Timer" {...a11yProps(0)} />
+                  <Tab label="Notifications" {...a11yProps(1)} />
+                  <Tab label="Application" {...a11yProps(2)} />
+                </Tabs>
               </Box>
             </Box>
-            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-              <Tabs
-                value={value}
-                onChange={handleChange}
-                aria-label="basic tabs example"
-                variant="fullWidth"
-              >
-                <Tab label="Timer" {...a11yProps(0)} />
-                <Tab label="Notifications" {...a11yProps(1)} />
-                <Tab label="Application" {...a11yProps(2)} />
-              </Tabs>
-            </Box>
+          </Box>
+          {/* //scrollable context box */}
+          <Box>
             <CustomTabPanel value={value} index={0}>
               <Typography id="modal-modal-title" variant="h6" component="h2">
                 Settings
@@ -182,19 +143,13 @@ const SettingsModal = ({
                 </Typography>
                 <Box
                   component="form"
-                  onSubmit={handleSubmit}
                   sx={{
                     "& > :not(style)": { m: 1, width: "400px" },
                   }}
                   noValidate
                   autoComplete="off"
                 >
-                  <TextField
-                    id="outlined-basic"
-                    value={pomodoro}
-                    onChange={handlePomodoroChange}
-                    variant="outlined"
-                  />
+                  <TextField id="outlined-basic" variant="outlined" />
                 </Box>
               </Box>
               <Box
@@ -215,12 +170,7 @@ const SettingsModal = ({
                   noValidate
                   autoComplete="off"
                 >
-                  <TextField
-                    id="outlined-basic"
-                    value={shortBreak}
-                    onChange={handleShortBreakTimeChange}
-                    variant="outlined"
-                  />
+                  <TextField id="outlined-basic" variant="outlined" />
                 </Box>
               </Box>
               <Box
@@ -241,12 +191,7 @@ const SettingsModal = ({
                   noValidate
                   autoComplete="off"
                 >
-                  <TextField
-                    id="outlined-basic"
-                    value={longBreak}
-                    onChange={handleLongBreakTimeChange}
-                    variant="outlined"
-                  />
+                  <TextField id="outlined-basic" variant="outlined" />
                 </Box>
               </Box>
               <Box
@@ -267,12 +212,7 @@ const SettingsModal = ({
                   noValidate
                   autoComplete="off"
                 >
-                  <TextField
-                    id="outlined-basic"
-                    value={4}
-                    // onChange={handleInputChange}
-                    variant="outlined"
-                  />
+                  <TextField id="outlined-basic" variant="outlined" />
                 </Box>
               </Box>
               <Box
@@ -293,12 +233,7 @@ const SettingsModal = ({
                   noValidate
                   autoComplete="off"
                 >
-                  <TextField
-                    id="outlined-basic"
-                    value={4}
-                    // onChange={handleInputChange}
-                    variant="outlined"
-                  />
+                  <TextField id="outlined-basic" variant="outlined" />
                 </Box>
               </Box>
 
@@ -320,17 +255,17 @@ const SettingsModal = ({
                 </Button>
               </Box>
             </CustomTabPanel>
-            <CustomTabPanel value={value} index={1}>
-              Item Two
-            </CustomTabPanel>
-            <CustomTabPanel value={value} index={2}>
-              Item Three
-            </CustomTabPanel>
           </Box>
+          <CustomTabPanel value={value} index={1}>
+            Item Two
+          </CustomTabPanel>
+          <CustomTabPanel value={value} index={2}>
+            Item Three
+          </CustomTabPanel>
         </Box>
       </Modal>
     </div>
   );
 };
 
-export default SettingsModal;
+export default SettingTabs;

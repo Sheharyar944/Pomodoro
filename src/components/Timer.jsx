@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useRef, useState, useEffect } from "react";
 import { Box, Button, IconButton, Typography } from "@mui/material";
 import { orange, red } from "@mui/material/colors";
@@ -8,14 +8,27 @@ import SettingsModal from "./SettingsModal";
 import AddIcon from "@mui/icons-material/Add";
 
 const Timer = () => {
-  const [timeLeft, setTimeLeft] = useState(1500);
+  const [pomodoroTime, setPomodoroTime] = useState(1500);
+  const [timeLeft, setTimeLeft] = useState(pomodoroTime);
+  const [shortBreakTime, setShortBreakTime] = useState(300);
+  const [longBreakTime, setLongBreakTime] = useState(900);
   const [isActive, setIsActive] = useState(null);
   const [isBreak, setIsBreak] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
-  const [isLongBreak, setIsLongBreak] = useState(1);
+  const [longBreakDelay, setLongBreakDelay] = useState(4);
+  const [isLongBreak, setIsLongBreak] = useState({ count: 1, state: false });
   const navigate = useNavigate();
 
-  const intervalIdRef = useRef(null);
+  let content;
+  if (isLongBreak.state) {
+    content = "Take a long break";
+  } else if (isBreak) {
+    content = "Take a short break";
+  } else {
+    content = "Pomodoro";
+  }
+
+  //   const intervalIdRef = useRef(null);
 
   // useEffect(() => {
   //     // Only set up the interval once, when the component mounts
@@ -64,45 +77,56 @@ const Timer = () => {
     // Add timeLeft as a dependency to re-run the effect when we update it
   }, [isActive]);
 
+  //   useEffect(() =>{
+  //     setTimeLeft(pomodoroTime)
+  //   },[]);
+
   const toggle = () => {
     setIsActive(!isActive);
     setIsDisabled(false);
   };
 
   const reset = () => {
-    setTimeLeft(1500);
+    setTimeLeft(pomodoroTime);
     setIsActive(false);
     setIsDisabled(true);
   };
 
   const done = () => {
-    if (isLongBreak === 4) {
-      setTimeLeft(900);
-      setIsLongBreak(1);
+    if (isLongBreak.count === 4) {
+      setTimeLeft(longBreakTime);
+      setIsLongBreak((prevState) => ({
+        ...prevState,
+        count: 1,
+        state: true,
+      }));
     } else {
-      setTimeLeft(300);
-      setIsLongBreak(isLongBreak + 1);
+      setTimeLeft(shortBreakTime);
+      setIsLongBreak((prevState) => ({
+        ...prevState,
+        count: prevState.count + 1,
+      }));
     }
     setIsActive(false);
     setIsBreak(!isBreak);
   };
 
-  const longBreakOrNot = () => {
-    if (isLongBreak.count === 4) {
-      setIsLongBreak((prevState) => {
-        return { ...prevState, state: !prevState.state };
-      });
-    }
-  };
   const skip = () => {
-    setTimeLeft(1500);
+    setTimeLeft(pomodoroTime);
     setIsActive(false);
     setIsBreak(false);
     setIsDisabled(true);
+    if (isLongBreak.state) {
+      setIsLongBreak((prevState) => ({
+        ...prevState,
+        count: 1,
+        state: false,
+      }));
+    }
   };
 
   const add = () => {
-    setTimeLeft(timeLeft + 60);
+    setTimeLeft(pomodoroTime + 60);
   };
 
   const formatTime = (timeLeft) => {
@@ -116,18 +140,19 @@ const Timer = () => {
   return (
     <Box width={750} color={orange} border={1} marginTop={5} marginBottom={5}>
       <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-        <SettingsModal />
+        <SettingsModal
+          pomodoroTime={pomodoroTime}
+          setPomodoroTime={setPomodoroTime}
+          shortBreakTime={shortBreakTime}
+          setShortBreakTime={setShortBreakTime}
+          longBreakTime={longBreakTime}
+          setLongBreakTime={setLongBreakTime}
+          setTimeLeft={setTimeLeft}
+        />
         <Box sx={{ display: "flex", alignItems: "center" }}>
-          {isBreak ? (
-            <Typography variant="body1" color="initial">
-              Short Break
-            </Typography>
-          ) : (
-            <Typography variant="body1" color="initial">
-              Pomodoro {isLongBreak}
-            </Typography>
-          )}
-
+          <Typography variant="body1" color="initial">
+            {content} {!isBreak && isLongBreak.count}
+          </Typography>
           <IconButton onClick={add} sx={{ color: "black" }}>
             <AddIcon />
           </IconButton>

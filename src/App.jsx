@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import Root from "./components/Root";
 import { AuthContext } from "./components/AuthContext";
+import SettingTabs from "./components/SettingTabs";
 
 const router = createBrowserRouter([
   {
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
       {
         path: "/profile/:userId",
         element: <Profile />,
+      },
+      {
+        path: "/tabs/",
+        element: <SettingTabs />,
       },
     ],
   },
