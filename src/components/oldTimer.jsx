@@ -1,16 +1,18 @@
 import React, { useContext } from "react";
-import { useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Box, Button, IconButton, Typography } from "@mui/material";
+import { orange, red } from "@mui/material/colors";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { useNavigate } from "react-router-dom";
 import SettingsModal from "./SettingsModal";
 import AddIcon from "@mui/icons-material/Add";
 import ToolTip from "./ToolTip";
+import { FlashAutoRounded } from "@mui/icons-material";
 
 const Timer = () => {
   const [pomodoroTime, setPomodoroTime] = useState(5);
-  const [timeLeft, setTimeLeft] = useState(null);
-  const [shortBreakTime, setShortBreakTime] = useState(5);
+  const [timeLeft, setTimeLeft] = useState(pomodoroTime);
+  const [shortBreakTime, setShortBreakTime] = useState(3);
   const [longBreakTime, setLongBreakTime] = useState(4);
   const [isActive, setIsActive] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
@@ -19,142 +21,50 @@ const Timer = () => {
   const [longBreakDelay, setLongBreakDelay] = useState(2);
   const [isLongBreak, setIsLongBreak] = useState({ count: 0, state: false });
   const [dailyGoal, setDailyGoal] = useState(null);
-  const [isChecked, setIsChecked] = useState(true);
-  const [pomodoro, setPomodoro] = useState(0);
-  const [initialPomodoro, setInitialPomodoro] = useState(pomodoroTime);
-  const [initialShortBreak, setInitialShortBreak] = useState(shortBreakTime);
-  const [initialLongBreak, setInitialLongBreak] = useState(longBreakTime);
-  const [updateQueue, setUpdateQueue] = useState([]);
-  const [updateShortBreakQueue, setUpdateShortBreakQueue] = useState([]);
-  const [updateLongBreakQueue, setUpdateLongBreakQueue] = useState([]);
-
+  const [isChecked, setIsChecked] = useState(false);
   let content;
+  let count = 0;
 
   const navigate = useNavigate();
 
   useEffect(() => {
     // Exit early when we reach 0
-    console.log("Component mounted");
 
-    // if (pomodoroTime == 0) {
-    //   console.log("pomodoroTime", pomodoroTime);
-    //   autoPomodoro();
-    // }
+    if (timeLeft === 0) return;
 
     let intervalId = null;
 
     // Save intervalId to clear the interval when the component re-renders
     if (isActive) {
-      if (isPomodoro) {
-        console.log("pomodoroTime", pomodoroTime);
-        intervalId = setInterval(() => {
-          setPomodoroTime((prevTime) => {
-            if (prevTime > 0) {
-              return prevTime - 1;
-            } else {
-              clearInterval(intervalId);
-              if (isChecked) {
-                autoPomodoro();
-                return initialPomodoro;
-              }
-              autoOffPomodoro();
-              return initialPomodoro;
-            }
-          });
-        }, 1000);
-      } else if (isLongBreak.state) {
-        intervalId = setInterval(() => {
-          setLongBreakTime((prevTime) => {
-            if (prevTime > 0) {
-              return prevTime - 1;
-            } else {
-              clearInterval(intervalId);
-              if (isChecked) {
-                autoPomodoro();
-                return initialLongBreak;
-              }
-              autoOffPomodoro();
-              return initialLongBreak;
-            }
-          });
-        }, 1000);
-      } else {
-        intervalId = setInterval(() => {
-          setShortBreakTime((prevTime) => {
-            if (prevTime > 0) {
-              return prevTime - 1;
-            } else {
-              clearInterval(intervalId);
-              if (isChecked) {
-                autoPomodoro();
-                return shortBreakTime;
-              }
-              autoOffPomodoro();
-              console.log("f");
-              return shortBreakTime;
-            }
-          });
-        }, 1000);
-      }
+      intervalId = setInterval(() => {
+        setTimeLeft((prevTime) => {
+          if (prevTime > 0) {
+            console.log("created interval", intervalId, timeLeft);
+            return prevTime - 1;
+          } else {
+            clearInterval(intervalId);
+            return 0;
+          }
+        });
+      }, 1000);
     } else {
       clearInterval(intervalId);
     }
     // Clear interval on re-render to avoid memory leaks
-
-    return () => {
-      clearInterval(intervalId);
-
-      console.log("Component will unmount");
-    };
+    return () => clearInterval(intervalId);
     // Add timeLeft as a dependency to re-run the effect when we update it
-  }, [isActive, isPomodoro, isChecked]);
+  }, [isActive]);
 
-  useEffect(() => {
-    applyQueuedUpdates();
-  }, [isPomodoro]);
+  //   useEffect(() => {
+  //     setTimeLeft(pomodoroTime);
+  //   }, [pomodoroTime]);
+  //   useEffect(() => {
+  //     setTimeLeft(shortBreakTime);
+  //   }, [shortBreakTime]);
+  //   useEffect(() => {
+  //     setTimeLeft();
+  //   }, [pomodoroTime]);
 
-  const queueUpdate = (pomodoro, shortBreak, longBreak) => {
-    setUpdateQueue((prevQueue) => [...prevQueue, pomodoro]);
-    setUpdateShortBreakQueue((prevQueue) => [...prevQueue, shortBreak]);
-    setUpdateLongBreakQueue((prevQueue) => [...prevQueue, longBreak]);
-  };
-
-  const applyQueuedUpdates = () => {
-    if (updateQueue.length > 0) {
-      setPomodoroTime(updateQueue[updateQueue.length - 1]); // Apply the latest update
-      setInitialPomodoro(updateQueue[updateQueue.length - 1]);
-      setUpdateQueue([]);
-    }
-    if (updateShortBreakQueue.length > 0) {
-      setShortBreakTime(
-        updateShortBreakQueue[updateShortBreakQueue.length - 1]
-      );
-      setInitialShortBreak(
-        updateShortBreakQueue[updateShortBreakQueue.length - 1]
-      );
-      setUpdateShortBreakQueue([]);
-    }
-    if (updateLongBreakQueue.length > 0) {
-      setLongBreakTime(updateLongBreakQueue[updateLongBreakQueue.length - 1]);
-      setInitialLongBreak(
-        updateLongBreakQueue[updateLongBreakQueue.length - 1]
-      );
-      setUpdateLongBreakQueue([]);
-    }
-  };
-
-  const autoPomodoro = () => {
-    setIsPomodoro(!isPomodoro);
-    setIsBreak(!isBreak);
-    longBreakCount();
-  };
-  const autoOffPomodoro = () => {
-    setIsPomodoro(!isPomodoro);
-    setIsActive(false);
-    longBreakCount();
-    setIsBreak(!isBreak);
-    setIsDisabled(true);
-  };
   if (isLongBreak.state) {
     content = "Take a long break";
   } else if (isBreak) {
@@ -169,38 +79,121 @@ const Timer = () => {
   };
 
   const reset = () => {
-    setPomodoroTime(initialPomodoro);
-    setIsDisabled(true);
+    setTimeLeft(pomodoroTime);
     setIsActive(false);
+    setIsDisabled(true);
   };
 
-  const longBreakCount = () => {
-    setIsLongBreak((prevState) => ({
-      ...prevState,
-      state: false,
-    }));
-    if (isPomodoro) {
-      setIsLongBreak((prevState) => ({
-        ...prevState,
-        count: prevState.count + 1,
-      }));
-      const i = isLongBreak.count + 1;
+  //   const done = () => {
+  //     if (isPomodoro) {
+  //       setTimeLeft(pomodoroTime);
+  //       setIsLongBreak((prevState) => ({
+  //         ...prevState,
+  //         count: prevState.count + 1,
+  //       }));
+  //     } else if (isLongBreak.count == longBreakDelay) {
+  //       setTimeLeft(longBreakTime);
+  //       setIsLongBreak((prevState) => ({
+  //         ...prevState,
+  //         count: 1,
+  //         state: true,
+  //       }));
+  //     } else {
+  //       setTimeLeft(shortBreakTime);
+  //     }
+  //     setIsActive(false);
+  //     setIsBreak(!isBreak);
+  //   };
 
-      if (i == longBreakDelay) {
-        setIsLongBreak((prevState) => ({
-          ...prevState,
-          state: true,
-          count: 0,
-        }));
-      }
-    }
-  };
+  //   const autoPomodoro = () => {
+  //     setIsPomodoro(!isPomodoro);
+  //     setIsBreak(!isBreak);
+  //     if (isPomodoro) {
+  //       if (isLongBreak.state) {
+  //         setIsLongBreak((prevState) => ({
+  //           ...prevState,
+  //           count: 0,
+  //           state: false,
+  //         }));
+  //       }
+  //       setTimeLeft(pomodoroTime);
+  //       setIsLongBreak((prevState) => ({
+  //         ...prevState,
+  //         count: prevState.count + 1,
+  //       }));
+  //     } else if (isLongBreak.count === longBreakDelay) {
+  //       setTimeLeft(longBreakTime);
+  //       setIsLongBreak((prevState) => ({
+  //         ...prevState,
+  //         count: 1,
+  //         state: true,
+  //       }));
+  //     } else {
+  //       setTimeLeft(shortBreakTime);
+  //       setIsBreak(true);
+  //     }
+  //   };
+
+  //   const autoPomodoro = () => {
+  //     // longBreak();
+  //     const newBreak = !isBreak;
+  //     const newPomodoro = !isPomodoro;
+  //     setIsBreak(newBreak);
+  //     setIsPomodoro(newPomodoro);
+  //     if (newPomodoro) {
+  //       setTimeLeft(pomodoroTime);
+  //     } else if (isLongBreak.state) {
+  //       setTimeLeft(longBreakTime);
+  //     } else {
+  //       setTimeLeft(shortBreakTime);
+  //     }
+  //   };
+
+  //   const longBreak = () => {
+  //     if (isPomodoro) {
+  //       setIsLongBreak((prevState) => ({
+  //         ...prevState,
+  //         count: prevState.count + 1,
+  //         state: false,
+  //       }));
+  //     }
+
+  //     if (isLongBreak.count == longBreakDelay) {
+  //       setIsLongBreak((prevState) => ({
+  //         ...prevState,
+  //         state: true,
+  //         count: 0,
+  //       }));
+  //     }
+  //   };
+
+  //   if (timeLeft == 0 && isChecked) {
+  //     // setIsPomodoro(!isPomodoro);
+  //     // setIsBreak(!isBreak);
+  //     autoPomodoro();
+  //   } else if (timeLeft == 0 && !isChecked) {
+  //     // setIsPomodoro(!isPomodoro);
+  //     // setIsBreak(!isBreak);
+  //     setIsActive(!isActive);
+  //     autoPomodoro();
+  //   }
 
   const skip = () => {
-    setPomodoroTime(initialPomodoro);
-    // setLongBreakTime(initialLongBreak);
-    // setShortBreakTime(initialShortBreak);
-    autoOffPomodoro();
+    setTimeLeft(pomodoroTime);
+    setIsActive(false);
+    setIsBreak(false);
+    setIsDisabled(true);
+    setIsLongBreak((prevState) => ({
+      ...prevState,
+      count: prevState.count + 1,
+    }));
+    if (isLongBreak.state) {
+      setIsLongBreak((prevState) => ({
+        ...prevState,
+        count: 1,
+        state: false,
+      }));
+    }
   };
 
   const add = () => {
@@ -213,24 +206,16 @@ const Timer = () => {
     }
   };
 
-  const formatTime = (pomodoroTime, shortBreakTime, longBreakTime) => {
-    let time;
-    if (isPomodoro) {
-      time = pomodoroTime;
-    } else if (isLongBreak.state) {
-      time = longBreakTime;
-    } else {
-      time = shortBreakTime;
-    }
-    const minutes = Math.floor(time / 60);
-    const seconds = time % 60;
+  const formatTime = (timeLeft) => {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
     return `${minutes.toString().padStart(2, "0")}:${seconds
       .toString()
       .padStart(2, "0")}`;
   };
 
   return (
-    <Box width={750} border={1} marginTop={5} marginBottom={5}>
+    <Box width={750} color={orange} border={1} marginTop={5} marginBottom={5}>
       <Box sx={{ display: "flex", justifyContent: "space-between" }}>
         <SettingsModal
           pomodoroTime={pomodoroTime}
@@ -245,20 +230,10 @@ const Timer = () => {
           setDailyGoal={setDailyGoal}
           isChecked={isChecked}
           setIsChecked={setIsChecked}
-          isActive={isActive}
-          pomodoro={pomodoro}
-          setPomodoro={setPomodoro}
-          setInitialPomodoro={setInitialPomodoro}
-          setInitialShortBreak={setInitialShortBreak}
-          setInitialLongBreak={setInitialLongBreak}
-          queueUpdate={queueUpdate}
-          isDisabled={isDisabled}
-          isPomodoro={isPomodoro}
-          isBreak={isBreak}
         />
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Typography className="unselectable" variant="body1" color="initial">
-            {content} {!isBreak && isLongBreak.count + 1}
+            {content} {!isBreak && isLongBreak.count}
           </Typography>
           <ToolTip title={"prolong time"} placement={"right-start"}>
             <IconButton onClick={add} sx={{ color: "black" }}>
@@ -279,7 +254,7 @@ const Timer = () => {
           fontSize={100}
           sx={{ color: "black" }}
         >
-          {formatTime(pomodoroTime, shortBreakTime, longBreakTime)}
+          {formatTime(timeLeft)}
         </Typography>
       </Box>
       <Box
@@ -367,7 +342,7 @@ const Timer = () => {
           } else {
             return (
               <Button
-                // aria-disabled={isDisabled}
+                aria-disabled={isDisabled}
                 disabled={isDisabled}
                 onClick={autoPomodoro}
                 sx={{ cursor: isDisabled ? "not-allowed" : "pointer" }}
