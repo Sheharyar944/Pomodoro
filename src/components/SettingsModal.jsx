@@ -13,6 +13,7 @@ import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
 import ToolTip from "./ToolTip";
 import MyToggle from "./MyToggle";
+import MyToggleButton from "./MyToggleButton";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -52,7 +53,7 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 700,
+  width: 600,
   bgcolor: "background.paper",
   border: "1px solid #000",
   boxShadow: 24,
@@ -71,8 +72,8 @@ const SettingsModal = ({
   longBreakDelay,
   setLongBreakDelay,
   setDailyGoal,
-  isChecked,
-  setIsChecked,
+  isAutoPomodoroChecked,
+  setIsAutoPomodoroChecked,
   isActive,
   pomodoro,
   setPomodoro,
@@ -86,6 +87,8 @@ const SettingsModal = ({
   isDisabled,
   isPomodoro,
   isBreak,
+  isAutoBreakChecked,
+  setIsAutoBreakChecked,
 }) => {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
@@ -125,22 +128,36 @@ const SettingsModal = ({
   const [longBreak, setLongBreak] = useState(0);
   const [longBreakDelayValue, setLongBreakDelayValue] = useState(0);
   const [dailyGoalValue, setDailyGoalValue] = useState(0);
+  const [isClassicChecked, setIsClassicChecked] = useState(false);
 
   useEffect(() => {
     setPomodoro(pomodoroTime);
     setShortBreak(shortBreakTime);
     setLongBreak(longBreakTime);
     setLongBreakDelayValue(longBreakDelay);
-  }, []);
+    if (isClassicChecked) {
+      setPomodoroTime(25 * 60);
+      setShortBreakTime(5 * 60);
+      setLongBreakTime(15 * 60);
+      setLongBreakDelay(4);
+    }
+  }, [isClassicChecked]);
+
+  // useEffect(() => {
+  //   setPomodoroTime(25 * 60);
+  //   setShortBreakTime(5 * 60);
+  //   setLongBreakTime(15 * 60);
+  //   setLongBreakDelay(4);
+  // }, [isClassicChecked]);
 
   const handlePomodoroChange = (e) => {
-    setPomodoro(e.target.value);
+    setPomodoro(e.target.value * 60);
   };
   const handleShortBreakTimeChange = (e) => {
-    setShortBreak(e.target.value);
+    setShortBreak(e.target.value * 60);
   };
   const handleLongBreakTimeChange = (e) => {
-    setLongBreak(e.target.value);
+    setLongBreak(e.target.value * 60);
   };
   const handleLongBreakDelayChange = (e) => {
     setLongBreakDelayValue(e.target.value);
@@ -154,10 +171,20 @@ const SettingsModal = ({
   };
 
   const handleAutoPomodoro = (event) => {
-    setIsChecked(event.target.checked);
+    setIsAutoPomodoroChecked(event.target.checked);
+  };
+  const handleAutoBreak = (event) => {
+    setIsAutoBreakChecked(event.target.checked);
   };
 
-  //     /////////////////////////////////////////
+  const handleSchemeClassic = (event) => {
+    setIsClassicChecked(!isClassicChecked);
+    setPomodoroTime(25 * 60);
+    setShortBreakTime(5 * 60);
+    setLongBreakTime(15 * 60);
+    setLongBreakDelay(4);
+  };
+
   return (
     <div>
       <ToolTip title={"settings"} placement={"right-start"}>
@@ -229,159 +256,348 @@ const SettingsModal = ({
               </Tabs>
             </Box>
             <CustomTabPanel value={value} index={0}>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-                Settings
-              </Typography>
+              <Box>
+                <MyToggleButton
+                  selected={isClassicChecked}
+                  onChange={handleSchemeClassic}
+                >
+                  classic
+                </MyToggleButton>
+              </Box>
               <Box
                 sx={{
                   display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
+                  flexDirection: "column",
                 }}
               >
-                <Typography variant="body1" color="initial">
-                  Pomodoro duration:
-                </Typography>
                 <Box
-                  component="form"
-                  onSubmit={handleSubmit}
                   sx={{
-                    "& > :not(style)": { m: 1, width: "400px" },
+                    display: "flex",
+                    flexDirection: "row",
+                    width: "100%",
+                    alignItems: "center",
                   }}
-                  noValidate
-                  autoComplete="off"
                 >
-                  <TextField
-                    id="outlined-basic"
-                    value={pomodoro}
-                    onChange={handlePomodoroChange}
-                    variant="outlined"
-                  />
+                  <Box sx={{ flex: 1 }}>
+                    <Typography variant="body1" color="initial">
+                      Pomodoro duration:
+                    </Typography>
+                  </Box>
+
+                  <Box
+                    component="form"
+                    onSubmit={handleSubmit}
+                    marginRight={2}
+                    sx={{
+                      "& > :not(style)": { m: 1 },
+                      flex: 1,
+                      p: 0,
+                    }}
+                    noValidate
+                    autoComplete="off"
+                  >
+                    <TextField
+                      id="outlined-basic"
+                      value={pomodoro / 60}
+                      onChange={handlePomodoroChange}
+                      variant="outlined"
+                      fullWidth={true}
+                      sx={{
+                        "& input": {
+                          padding: "5px",
+                          margin: 0,
+                        },
+                      }}
+                    />
+                  </Box>
+                </Box>
+                <Box>
+                  <Typography
+                    variant="body1"
+                    color="initial"
+                    fontSize={12}
+                    marginLeft={34}
+                  >
+                    in minutes
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    width: "100%",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Box sx={{ flex: 1 }}>
+                    <Typography variant="body1" color="initial">
+                      Short break duration:
+                    </Typography>
+                  </Box>
+
+                  <Box
+                    component="form"
+                    onSubmit={handleSubmit}
+                    marginRight={2}
+                    sx={{
+                      "& > :not(style)": { m: 1 },
+                      flex: 1,
+                      p: 0,
+                    }}
+                    noValidate
+                    autoComplete="off"
+                  >
+                    <TextField
+                      id="outlined-basic"
+                      value={shortBreak / 60}
+                      onChange={handleShortBreakTimeChange}
+                      variant="outlined"
+                      fullWidth={true}
+                      sx={{
+                        "& input": {
+                          padding: "5px",
+                          margin: 0,
+                        },
+                      }}
+                    />
+                  </Box>
+                </Box>
+                <Box>
+                  <Typography
+                    variant="body1"
+                    color="initial"
+                    fontSize={12}
+                    marginLeft={34}
+                  >
+                    in minutes
+                  </Typography>
                 </Box>
               </Box>
               <Box
                 sx={{
                   display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
+                  flexDirection: "column",
                 }}
               >
-                <Typography variant="body1" color="initial">
-                  Short break duration:
-                </Typography>
                 <Box
-                  component="form"
-                  onSubmit={handleSubmit}
                   sx={{
-                    "& > :not(style)": { m: 1, width: "400px" },
+                    display: "flex",
+                    flexDirection: "row",
+                    width: "100%",
+                    alignItems: "center",
+                    justifyContent: "space-between",
                   }}
-                  noValidate
-                  autoComplete="off"
                 >
-                  <TextField
-                    id="outlined-basic"
-                    value={shortBreak}
-                    onChange={handleShortBreakTimeChange}
-                    variant="outlined"
-                  />
+                  <Box sx={{ flex: 1 }}>
+                    <Typography variant="body1" color="initial">
+                      Long break duration:
+                    </Typography>
+                  </Box>
+                  <Box
+                    component="form"
+                    onSubmit={handleSubmit}
+                    marginRight={2}
+                    sx={{
+                      "& > :not(style)": { m: 1 },
+                      flex: 1,
+                      p: 0,
+                    }}
+                    noValidate
+                    autoComplete="off"
+                  >
+                    <TextField
+                      id="outlined-basic"
+                      value={longBreak / 60}
+                      onChange={handleLongBreakTimeChange}
+                      variant="outlined"
+                      fullWidth={true}
+                      sx={{
+                        "& input": {
+                          padding: "5px",
+                          margin: 0,
+                        },
+                      }}
+                    />
+                  </Box>
+                </Box>
+                <Box>
+                  <Typography
+                    variant="body1"
+                    color="initial"
+                    fontSize={12}
+                    marginLeft={34}
+                  >
+                    in minutes
+                  </Typography>
                 </Box>
               </Box>
               <Box
                 sx={{
                   display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
+                  flexDirection: "column",
                 }}
               >
-                <Typography variant="body1" color="initial">
-                  Long break duration:
-                </Typography>
                 <Box
-                  component="form"
-                  onSubmit={handleSubmit}
                   sx={{
-                    "& > :not(style)": { m: 1, width: "400px" },
+                    display: "flex",
+                    flexDirection: "row",
+                    width: "100%",
+                    alignItems: "center",
+                    justifyContent: "space-between",
                   }}
-                  noValidate
-                  autoComplete="off"
                 >
-                  <TextField
-                    id="outlined-basic"
-                    value={longBreak}
-                    onChange={handleLongBreakTimeChange}
-                    variant="outlined"
-                  />
+                  <Box sx={{ flex: 1 }}>
+                    <Typography variant="body1" color="initial">
+                      Short break delay:
+                    </Typography>
+                  </Box>
+                  <Box
+                    component="form"
+                    onSubmit={handleSubmit}
+                    marginRight={2}
+                    sx={{
+                      "& > :not(style)": { m: 1 },
+                      flex: 1,
+                      p: 0,
+                    }}
+                    noValidate
+                    autoComplete="off"
+                  >
+                    <TextField
+                      id="outlined-basic"
+                      value={longBreakDelayValue}
+                      onChange={handleLongBreakDelayChange}
+                      variant="outlined"
+                      fullWidth={true}
+                      sx={{
+                        "& input": {
+                          padding: "5px",
+                          margin: 0,
+                        },
+                      }}
+                    />
+                  </Box>
+                </Box>
+                <Box>
+                  <Typography
+                    variant="body1"
+                    color="initial"
+                    fontSize={12}
+                    marginLeft={34}
+                  >
+                    in pomodoros
+                  </Typography>
                 </Box>
               </Box>
               <Box
                 sx={{
                   display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
+                  flexDirection: "column",
                 }}
               >
-                <Typography variant="body1" color="initial">
-                  Long break delay:
-                </Typography>
                 <Box
-                  component="form"
-                  onSubmit={handleSubmit}
                   sx={{
-                    "& > :not(style)": { m: 1, width: "400px" },
+                    display: "flex",
+                    flexDirection: "row",
+                    width: "100%",
+                    alignItems: "center",
+                    justifyContent: "space-between",
                   }}
-                  noValidate
-                  autoComplete="off"
                 >
-                  <TextField
-                    id="outlined-basic"
-                    value={longBreakDelayValue}
-                    onChange={handleLongBreakDelayChange}
-                    variant="outlined"
-                  />
+                  <Box sx={{ flex: 1 }}>
+                    <Typography variant="body1" color="initial">
+                      Daily goal:
+                    </Typography>
+                  </Box>
+                  <Box
+                    component="form"
+                    onSubmit={handleSubmit}
+                    marginRight={2}
+                    sx={{
+                      "& > :not(style)": { m: 1 },
+                      flex: 1,
+                      p: 0,
+                    }}
+                    noValidate
+                    autoComplete="off"
+                  >
+                    <TextField
+                      id="outlined-basic"
+                      value={dailyGoalValue}
+                      onChange={handleDailyGoalChange}
+                      variant="outlined"
+                      fullWidth={true}
+                      sx={{
+                        "& input": {
+                          padding: "5px",
+                          margin: 0,
+                        },
+                      }}
+                    />
+                  </Box>
                 </Box>
+                {/* <Box>
+                  <Typography
+                    variant="body1"
+                    color="initial"
+                    fontSize={12}
+                    marginLeft={34}
+                  >
+                    in minutes
+                  </Typography>
+                </Box> */}
               </Box>
+
               <Box
                 sx={{
                   display: "flex",
+                  flexDirection: "row",
+                  width: "100%",
                   alignItems: "center",
                   justifyContent: "space-between",
                 }}
               >
-                <Typography variant="body1" color="initial">
-                  Daily goal:
-                </Typography>
-                <Box
-                  component="form"
-                  onSubmit={handleSubmit}
-                  sx={{
-                    "& > :not(style)": { m: 1, width: "400px" },
-                  }}
-                  noValidate
-                  autoComplete="off"
-                >
-                  <TextField
-                    id="outlined-basic"
-                    value={dailyGoalValue}
-                    onChange={handleDailyGoalChange}
-                    variant="outlined"
-                  />
+                <Box sx={{ flex: 1 }}>
+                  <Typography variant="body1" color="initial">
+                    Auto start pomodoros:
+                  </Typography>
                 </Box>
-              </Box>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography variant="body1" color="initial">
-                  Auto Start Break:
-                </Typography>
-                <Box sx={{ width: "400px" }}>
+                <Box sx={{ flex: 1, width: "400px" }}>
                   <MyToggle
                     label={""}
-                    isChecked={isChecked}
+                    isChecked={isAutoPomodoroChecked}
                     handleChange={handleAutoPomodoro}
+                  />
+                </Box>
+              </Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  width: "100%",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Box sx={{ flex: 1 }}>
+                  <Typography variant="body1" color="initial">
+                    Auto start breaks:
+                  </Typography>
+                </Box>
+                <Box sx={{ flex: 1, width: "400px" }}>
+                  <MyToggle
+                    label={""}
+                    isChecked={isAutoBreakChecked}
+                    handleChange={handleAutoBreak}
                   />
                 </Box>
               </Box>

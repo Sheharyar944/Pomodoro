@@ -8,18 +8,19 @@ import AddIcon from "@mui/icons-material/Add";
 import ToolTip from "./ToolTip";
 
 const Timer = () => {
-  const [pomodoroTime, setPomodoroTime] = useState(5);
+  const [pomodoroTime, setPomodoroTime] = useState(5 * 60);
   const [timeLeft, setTimeLeft] = useState(null);
-  const [shortBreakTime, setShortBreakTime] = useState(5);
-  const [longBreakTime, setLongBreakTime] = useState(4);
+  const [shortBreakTime, setShortBreakTime] = useState(3 * 60);
+  const [longBreakTime, setLongBreakTime] = useState(5 * 60);
   const [isActive, setIsActive] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
   const [isPomodoro, setIsPomodoro] = useState(true);
   const [isDisabled, setIsDisabled] = useState(true);
-  const [longBreakDelay, setLongBreakDelay] = useState(2);
+  const [longBreakDelay, setLongBreakDelay] = useState(4);
   const [isLongBreak, setIsLongBreak] = useState({ count: 0, state: false });
   const [dailyGoal, setDailyGoal] = useState(null);
-  const [isChecked, setIsChecked] = useState(true);
+  const [isAutoPomodoroChecked, setIsAutoPomodoroChecked] = useState(false);
+  const [isAutoBreakChecked, setIsAutoBreakChecked] = useState(false);
   const [pomodoro, setPomodoro] = useState(0);
   const [initialPomodoro, setInitialPomodoro] = useState(pomodoroTime);
   const [initialShortBreak, setInitialShortBreak] = useState(shortBreakTime);
@@ -53,7 +54,7 @@ const Timer = () => {
               return prevTime - 1;
             } else {
               clearInterval(intervalId);
-              if (isChecked) {
+              if (isAutoBreakChecked) {
                 autoPomodoro();
                 return initialPomodoro;
               }
@@ -69,7 +70,7 @@ const Timer = () => {
               return prevTime - 1;
             } else {
               clearInterval(intervalId);
-              if (isChecked) {
+              if (isAutoPomodoroChecked) {
                 autoPomodoro();
                 return initialLongBreak;
               }
@@ -85,13 +86,12 @@ const Timer = () => {
               return prevTime - 1;
             } else {
               clearInterval(intervalId);
-              if (isChecked) {
+              if (isAutoPomodoroChecked) {
                 autoPomodoro();
-                return shortBreakTime;
+                return initialShortBreak;
               }
               autoOffPomodoro();
-              console.log("f");
-              return shortBreakTime;
+              return initialShortBreak;
             }
           });
         }, 1000);
@@ -107,7 +107,7 @@ const Timer = () => {
       console.log("Component will unmount");
     };
     // Add timeLeft as a dependency to re-run the effect when we update it
-  }, [isActive, isPomodoro, isChecked]);
+  }, [isActive, isPomodoro, isAutoPomodoroChecked, isAutoBreakChecked]);
 
   useEffect(() => {
     applyQueuedUpdates();
@@ -198,8 +198,8 @@ const Timer = () => {
 
   const skip = () => {
     setPomodoroTime(initialPomodoro);
-    // setLongBreakTime(initialLongBreak);
-    // setShortBreakTime(initialShortBreak);
+    setLongBreakTime(initialLongBreak);
+    setShortBreakTime(initialShortBreak);
     autoOffPomodoro();
   };
 
@@ -243,8 +243,10 @@ const Timer = () => {
           longBreakDelay={longBreakDelay}
           setLongBreakDelay={setLongBreakDelay}
           setDailyGoal={setDailyGoal}
-          isChecked={isChecked}
-          setIsChecked={setIsChecked}
+          isAutoPomodoroChecked={isAutoPomodoroChecked}
+          setIsAutoPomodoroChecked={setIsAutoPomodoroChecked}
+          isAutoBreakChecked={isAutoBreakChecked}
+          setIsAutoBreakChecked={setIsAutoBreakChecked}
           isActive={isActive}
           pomodoro={pomodoro}
           setPomodoro={setPomodoro}
