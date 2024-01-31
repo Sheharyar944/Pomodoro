@@ -261,7 +261,7 @@ const SettingsModal = ({
                   selected={isClassicChecked}
                   onChange={handleSchemeClassic}
                 >
-                  classic
+                  classic - 25 5 15 4
                 </MyToggleButton>
               </Box>
               <Box
@@ -606,6 +606,7 @@ const SettingsModal = ({
             <CustomTabPanel value={value} index={1}>
               Item Two
             </CustomTabPanel>
+
             <CustomTabPanel value={value} index={2}>
               Item Three
             </CustomTabPanel>
