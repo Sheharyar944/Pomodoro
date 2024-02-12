@@ -1,17 +1,17 @@
 import React, { useContext } from "react";
 import { useState, useEffect } from "react";
 import { Box, Button, IconButton, Typography } from "@mui/material";
-import SettingsIcon from "@mui/icons-material/Settings";
 import { useNavigate } from "react-router-dom";
 import SettingsModal from "./SettingsModal";
 import AddIcon from "@mui/icons-material/Add";
 import ToolTip from "./ToolTip";
+import soundUrl from "../assets/sounds/bell1.wav";
+import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 
 const Timer = () => {
-  const [pomodoroTime, setPomodoroTime] = useState(5 * 60);
-  const [timeLeft, setTimeLeft] = useState(null);
-  const [shortBreakTime, setShortBreakTime] = useState(3 * 60);
-  const [longBreakTime, setLongBreakTime] = useState(5 * 60);
+  const [pomodoroTime, setPomodoroTime] = useState(5);
+  const [shortBreakTime, setShortBreakTime] = useState(3);
+  const [longBreakTime, setLongBreakTime] = useState(5);
   const [isActive, setIsActive] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
   const [isPomodoro, setIsPomodoro] = useState(true);
@@ -28,7 +28,7 @@ const Timer = () => {
   const [updateQueue, setUpdateQueue] = useState([]);
   const [updateShortBreakQueue, setUpdateShortBreakQueue] = useState([]);
   const [updateLongBreakQueue, setUpdateLongBreakQueue] = useState([]);
-
+  const [playAlarmSound, setPlayAlarmSound] = useState(true);
   let content;
 
   const navigate = useNavigate();
@@ -50,14 +50,16 @@ const Timer = () => {
         console.log("pomodoroTime", pomodoroTime);
         intervalId = setInterval(() => {
           setPomodoroTime((prevTime) => {
-            if (prevTime > 0) {
+            if (prevTime > 1) {
               return prevTime - 1;
             } else {
               clearInterval(intervalId);
               if (isAutoBreakChecked) {
+                if (playAlarmSound) playBell();
                 autoPomodoro();
                 return initialPomodoro;
               }
+              if (playAlarmSound) playBell();
               autoOffPomodoro();
               return initialPomodoro;
             }
@@ -66,14 +68,16 @@ const Timer = () => {
       } else if (isLongBreak.state) {
         intervalId = setInterval(() => {
           setLongBreakTime((prevTime) => {
-            if (prevTime > 0) {
+            if (prevTime > 1) {
               return prevTime - 1;
             } else {
               clearInterval(intervalId);
               if (isAutoPomodoroChecked) {
+                if (playAlarmSound) playBell();
                 autoPomodoro();
                 return initialLongBreak;
               }
+              if (playAlarmSound) playBell();
               autoOffPomodoro();
               return initialLongBreak;
             }
@@ -82,14 +86,16 @@ const Timer = () => {
       } else {
         intervalId = setInterval(() => {
           setShortBreakTime((prevTime) => {
-            if (prevTime > 0) {
+            if (prevTime > 1) {
               return prevTime - 1;
             } else {
               clearInterval(intervalId);
               if (isAutoPomodoroChecked) {
+                if (playAlarmSound) playBell();
                 autoPomodoro();
                 return initialShortBreak;
               }
+              if (playAlarmSound) playBell();
               autoOffPomodoro();
               return initialShortBreak;
             }
@@ -106,7 +112,6 @@ const Timer = () => {
 
       console.log("Component will unmount");
     };
-    // Add timeLeft as a dependency to re-run the effect when we update it
   }, [isActive, isPomodoro, isAutoPomodoroChecked, isAutoBreakChecked]);
 
   useEffect(() => {
@@ -121,7 +126,7 @@ const Timer = () => {
 
   const applyQueuedUpdates = () => {
     if (updateQueue.length > 0) {
-      setPomodoroTime(updateQueue[updateQueue.length - 1]); // Apply the latest update
+      setPomodoroTime(updateQueue[updateQueue.length - 1]);
       setInitialPomodoro(updateQueue[updateQueue.length - 1]);
       setUpdateQueue([]);
     }
@@ -147,7 +152,10 @@ const Timer = () => {
     setIsPomodoro(!isPomodoro);
     setIsBreak(!isBreak);
     longBreakCount();
+    setIsDisabled(true);
+    if (playAlarmSound) playBell();
   };
+
   const autoOffPomodoro = () => {
     setIsPomodoro(!isPomodoro);
     setIsActive(false);
@@ -203,14 +211,31 @@ const Timer = () => {
     autoOffPomodoro();
   };
 
+  const forward = () => {
+    setIsPomodoro(!isPomodoro);
+    setIsBreak(!isBreak);
+    longBreakCount();
+  };
+
   const add = () => {
-    setTimeLeft(pomodoroTime + 60);
+    if (isPomodoro) {
+      setPomodoroTime(pomodoroTime + 60);
+    } else if (isLongBreak) {
+      setLongBreakTime(longBreakTime + 60);
+    } else {
+      setShortBreakTime(shortBreakTime + 60);
+    }
   };
 
   const isDailyGoalReached = () => {
     if (dailyGoal == isLongBreak) {
       return true;
     }
+  };
+
+  const playBell = () => {
+    const bell = new Audio(soundUrl);
+    bell.play();
   };
 
   const formatTime = (pomodoroTime, shortBreakTime, longBreakTime) => {
@@ -239,7 +264,6 @@ const Timer = () => {
           setShortBreakTime={setShortBreakTime}
           longBreakTime={longBreakTime}
           setLongBreakTime={setLongBreakTime}
-          setTimeLeft={setTimeLeft}
           longBreakDelay={longBreakDelay}
           setLongBreakDelay={setLongBreakDelay}
           setDailyGoal={setDailyGoal}
@@ -257,16 +281,27 @@ const Timer = () => {
           isDisabled={isDisabled}
           isPomodoro={isPomodoro}
           isBreak={isBreak}
+          playAlarmSound={playAlarmSound}
+          setPlayAlarmSound={setPlayAlarmSound}
         />
+
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Typography className="unselectable" variant="body1" color="initial">
             {content} {!isBreak && isLongBreak.count + 1}
           </Typography>
-          <ToolTip title={"prolong time"} placement={"right-start"}>
-            <IconButton onClick={add} sx={{ color: "black" }}>
-              <AddIcon />
-            </IconButton>
-          </ToolTip>
+          {isDisabled ? (
+            <ToolTip title={"forward"} placement={"right-start"}>
+              <IconButton onClick={forward} sx={{ color: "black" }}>
+                <KeyboardDoubleArrowRightIcon />
+              </IconButton>
+            </ToolTip>
+          ) : (
+            <ToolTip title={"prolong time"} placement={"right-start"}>
+              <IconButton onClick={add} sx={{ color: "black" }}>
+                <AddIcon />
+              </IconButton>
+            </ToolTip>
+          )}
         </Box>
       </Box>
 

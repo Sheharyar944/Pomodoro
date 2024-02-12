@@ -5,9 +5,6 @@
   color: blueviolet;
 }
 
-.header {
-  display: flex;
-}
 .header-buttons {
   display: flex;
   justify-content: right;

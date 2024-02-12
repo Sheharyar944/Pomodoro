@@ -6,6 +6,7 @@ import TextField from "@mui/material/TextField";
 import { AuthContext } from "../components/AuthContext.jsx";
 import { Button } from "@mui/material";
 import SettingTabs from "../components/SettingTabs.jsx";
+import axios from "axios";
 
 const Home = () => {
   const { user, userDetails } = useContext(AuthContext);
@@ -15,17 +16,17 @@ const Home = () => {
     event.preventDefault();
 
     try {
-      const response = await fetch(
-        `http://127.0.0.1:8000/user/${userDetails.id}/tasks/`,
-        {
-          method: "POST",
-          header: {
-            "Content-Type": "application/json",
-            Authorization: "user.token",
-          },
-          body: JSON.stringify({ description: task, updated: new Date() }),
-        }
-      );
+      console.log("token", user.access);
+      console.log("user", user.user);
+
+      const response = await fetch(`http://127.0.0.1:8000/createtasks/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          // Authorization: "Bearer" + String(user.access),
+        },
+        body: JSON.stringify({ description: task }),
+      });
       if (response.ok) {
         console.log("task added successfully");
         setTask("");
@@ -38,7 +39,16 @@ const Home = () => {
   };
 
   return (
-    <Box display="flex" flexDirection="column" alignItems="center">
+    <Box
+      sx={{
+        height: "100vh",
+        overflowY: "auto",
+        padding: "20px",
+      }}
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+    >
       <Timer />
       {/* <SettingTabs /> */}
 
@@ -53,8 +63,9 @@ const Home = () => {
             fullWidth
             label=""
             id="fullWidth"
-            value={task}
             onChange={(e) => setTask(e.target.value)}
+            value={task}
+            type="text"
             placeholder="Write your task..."
             style={{ borderColor: "black" }}
           />

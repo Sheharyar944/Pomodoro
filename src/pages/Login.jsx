@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "../components/AuthContext";
+import { Box } from "@mui/material";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -49,29 +50,31 @@ const Login = () => {
   };
 
   return (
-    <form>
-      <label>
-        Username:
-        <input
-          type="text"
-          name="username"
-          value={username}
-          onChange={handleUsernameChange}
-        ></input>
-      </label>
-      <label>
-        Password:
-        <input
-          type="password"
-          name="password"
-          value={password}
-          onChange={handlePasswordChange}
-        ></input>
-      </label>
-      <button type="submit" onClick={handleSubmit}>
-        Submit
-      </button>
-    </form>
+    <Box sx={{ paddingTop: "50px" }}>
+      <form>
+        <label>
+          Username:
+          <input
+            type="text"
+            name="username"
+            value={username}
+            onChange={handleUsernameChange}
+          ></input>
+        </label>
+        <label>
+          Password:
+          <input
+            type="password"
+            name="password"
+            value={password}
+            onChange={handlePasswordChange}
+          ></input>
+        </label>
+        <button type="submit" onClick={handleSubmit}>
+          Submit
+        </button>
+      </form>
+    </Box>
   );
 };
 
