@@ -320,7 +320,6 @@ const Timer = () => {
         </Typography>
       </Box>
       <Box
-        border={0}
         sx={{
           display: "flex",
           marginTop: 3,

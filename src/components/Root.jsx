@@ -86,6 +86,7 @@ const Root = () => {
               fontSize: "20px",
               width: "182px",
             }}
+            color="default"
             aria-label="twitter"
           >
             <AppleIcon
@@ -169,7 +170,7 @@ const Root = () => {
           }}
           aria-label="twitter"
         >
-          <XIcon sx={{ height: "20px" }} />
+          <XIcon sx={{ height: "20px", paddingBottom: "3px" }} />
           Tweet
         </IconButton>
 
@@ -183,7 +184,7 @@ const Root = () => {
             fontSize: "20px",
           }}
         >
-          <FacebookIcon sx={{ height: "20px" }} />
+          <FacebookIcon sx={{ height: "24px", paddingBottom: "3px" }} />
           Share 1437
         </IconButton>
         <IconButton
@@ -196,7 +197,7 @@ const Root = () => {
             fontSize: "20px",
           }}
         >
-          <PinterestIcon sx={{ height: "20px" }} /> Pin
+          <PinterestIcon sx={{ height: "24px", paddingBottom: "3px" }} /> Pin
         </IconButton>
         <IconButton
           aria-label="twitter"
@@ -208,7 +209,7 @@ const Root = () => {
             fontSize: "20px",
           }}
         >
-          <RedditIcon sx={{ height: "20px" }} /> Share 99
+          <RedditIcon sx={{ height: "24px", paddingBottom: "3px" }} /> Share 99
         </IconButton>
         <IconButton
           aria-label="twitter"
@@ -220,7 +221,7 @@ const Root = () => {
             fontSize: "20px",
           }}
         >
-          <TelegramIcon sx={{ height: "20px" }} /> Send
+          <TelegramIcon sx={{ height: "24px", paddingBottom: "3px" }} /> Send
         </IconButton>
         <IconButton
           aria-label="twitter"
@@ -232,7 +233,7 @@ const Root = () => {
             fontSize: "20px",
           }}
         >
-          <WhatsAppIcon sx={{ height: "20px" }} /> Send
+          <WhatsAppIcon sx={{ height: "24px", paddingBottom: "3px" }} /> Send
         </IconButton>
       </Box>
       <Box

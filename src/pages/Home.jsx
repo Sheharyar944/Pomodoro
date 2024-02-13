@@ -7,6 +7,7 @@ import { AuthContext } from "../components/AuthContext.jsx";
 import { Button } from "@mui/material";
 import SettingTabs from "../components/SettingTabs.jsx";
 import axios from "axios";
+import MyCarousel from "../components/MyCarousel.jsx";
 
 const Home = () => {
   const { user, userDetails } = useContext(AuthContext);
@@ -23,7 +24,7 @@ const Home = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          // Authorization: "Bearer" + String(user.access),
+          Authorization: "Bearer" + user.access,
         },
         body: JSON.stringify({ description: task }),
       });
@@ -40,16 +41,17 @@ const Home = () => {
 
   return (
     <Box
-      sx={{
-        height: "100vh",
-        overflowY: "auto",
-        padding: "20px",
-      }}
+      // sx={{
+      //   height: "100vh",
+      //   overflowY: "auto",
+      //   padding: "20px",
+      // }}
       display="flex"
       flexDirection="column"
       alignItems="center"
     >
       <Timer />
+      <MyCarousel />
       {/* <SettingTabs /> */}
 
       <Box
