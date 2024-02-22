@@ -14,7 +14,7 @@ import TelegramIcon from "@mui/icons-material/Telegram";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import MicrosoftIcon from "@mui/icons-material/Microsoft";
 import AppleIcon from "@mui/icons-material/Apple";
-import { ForkLeft } from "@mui/icons-material";
+import DropDownMenu from "./DropDownMenu.jsx";
 
 const Root = () => {
   const navigate = useNavigate();
@@ -35,33 +35,29 @@ const Root = () => {
           top: 0,
           left: 0,
           width: "100%",
-          backgroundColor: "#fff",
+          // backgroundColor: "#fff",
           zIndex: 1000,
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          borderBottom: "1px solid",
         }}
       >
         <Box>
           <Header />
         </Box>
-        <Box>
+
+        <Box sx={{ display: "flex" }}>
           {isLoggedIn && (
             <Button
               onClick={() => navigate(`/Profile/${userDetails.id}`)}
               style={{ color: "black" }}
             >
-              {userDetails.username}
+              {userDetails.email}
             </Button>
           )}
           {isLoggedIn ? (
-            <Button
-              onClick={handleLogout}
-              variant="text"
-              style={{ color: "black" }}
-            >
-              Logout
-            </Button>
+            <DropDownMenu />
           ) : (
             <Button
               onClick={() => navigate("/login")}
@@ -73,8 +69,12 @@ const Root = () => {
           )}
         </Box>
       </Box>
-      <Divider></Divider>
-      <Outlet />
+
+      <Divider />
+      <Box>
+        <Outlet />
+      </Box>
+
       <Box sx={{ display: "flex", justifyContent: "center" }}>
         <Box>
           <IconButton
@@ -159,6 +159,7 @@ const Root = () => {
           </Box>
         </IconButton>
       </Box>
+
       <Box sx={{ display: "flex", justifyContent: "center" }}>
         <IconButton
           sx={{

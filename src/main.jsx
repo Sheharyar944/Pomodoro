@@ -7,11 +7,14 @@ import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import { AuthProvider } from "./components/AuthContext.jsx";
+import { TimerContextProvider } from "./components/TimerContext.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   // <React.StrictMode>
   <AuthProvider>
-    <App />
+    <TimerContextProvider>
+      <App />
+    </TimerContextProvider>
   </AuthProvider>
   // </React.StrictMode>
 );

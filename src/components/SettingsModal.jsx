@@ -76,8 +76,15 @@ const SettingsModal = ({
   isActive,
   pomodoro,
   setPomodoro,
+  shortBreak,
+  setShortBreak,
+  longBreak,
+  setLongBreak,
+  initialPomodoro,
   setInitialPomodoro,
+  initialShortBreak,
   setInitialShortBreak,
+  initialLongBreak,
   setInitialLongBreak,
   queueUpdate,
   isDisabled,
@@ -90,14 +97,15 @@ const SettingsModal = ({
 }) => {
   const [open, setOpen] = React.useState(false);
   const [longBreakDelayValue, setLongBreakDelayValue] = useState(0);
-  const [shortBreak, setShortBreak] = useState(0);
-  const [longBreak, setLongBreak] = useState(0);
+  // const [shortBreak, setShortBreak] = useState(0);
+  // const [longBreak, setLongBreak] = useState(0);
   const [dailyGoalValue, setDailyGoalValue] = useState(0);
 
   useEffect(() => {
-    setPomodoro(pomodoroTime);
-    setShortBreak(shortBreakTime);
-    setLongBreak(longBreakTime);
+    console.log("mounts ");
+    setPomodoro(initialPomodoro);
+    setShortBreak(initialShortBreak);
+    setLongBreak(initialLongBreak);
     setLongBreakDelayValue(longBreakDelay);
   }, []);
 

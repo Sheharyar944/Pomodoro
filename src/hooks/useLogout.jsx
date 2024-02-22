@@ -10,6 +10,7 @@ const useLogout = () => {
     localStorage.removeItem("refresh_token");
     localStorage.removeItem("username");
     localStorage.removeItem("id");
+    localStorage.removeItem("email");
   };
 
   return logout;

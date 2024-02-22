@@ -5,7 +5,7 @@ import TextField from "@mui/material/TextField";
 
 import { AuthContext } from "../components/AuthContext.jsx";
 import { Button } from "@mui/material";
-import SettingTabs from "../components/SettingTabs.jsx";
+import SettingTabs from "../components/SettingsTabs.jsx";
 import axios from "axios";
 import MyCarousel from "../components/MyCarousel.jsx";
 
@@ -41,11 +41,10 @@ const Home = () => {
 
   return (
     <Box
-      // sx={{
-      //   height: "100vh",
-      //   overflowY: "auto",
-      //   padding: "20px",
-      // }}
+      sx={{
+        overflow: "auto",
+        padding: "20px",
+      }}
       display="flex"
       flexDirection="column"
       alignItems="center"

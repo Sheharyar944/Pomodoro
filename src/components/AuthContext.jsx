@@ -12,6 +12,7 @@ export const AuthProvider = ({ children }) => {
   const [userDetails, setUserDetails] = useState({
     username: localStorage.getItem("username") || "",
     id: localStorage.getItem("id") || null,
+    email: localStorage.getItem("email") || "",
   });
 
   // Placeholder for login logic
@@ -35,8 +36,8 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const getDetails = (username, id) => {
-    setUserDetails({ username, id });
+  const getDetails = (username, id, email) => {
+    setUserDetails({ username, id, email });
   };
 
   return (
