@@ -1,12 +1,5 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
-import { Box, Button, IconButton, Typography } from "@mui/material";
-
-import SettingsModal from "./SettingsModal";
-import AddIcon from "@mui/icons-material/Add";
-import ToolTip from "./ToolTip";
+import React, { createContext, useState, useEffect } from "react";
 import soundUrl from "../assets/sounds/bell1.wav";
-import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
-import SettingsModal1 from "./SettingsModal1";
 
 export const TimerContext = createContext();
 
@@ -15,14 +8,22 @@ export const TimerContextProvider = ({ children }) => {
   const [shortBreakTime, setShortBreakTime] = useState(3);
   const [longBreakTime, setLongBreakTime] = useState(5);
   const [isActive, setIsActive] = useState(false);
-  const [isBreak, setIsBreak] = useState(false);
-  const [isPomodoro, setIsPomodoro] = useState(true);
+  const [isBreak, setIsBreak] = useState(
+    localStorage.getItem("isBreak") === "true"
+  );
+  const [isPomodoro, setIsPomodoro] = useState(
+    localStorage.getItem("isPomodoro") === "true" ||
+      localStorage.getItem("isPomodoro") === null
+  );
   const [isDisabled, setIsDisabled] = useState(
     localStorage.getItem("isDisabled") === "true" ||
       localStorage.getItem("isDisabled") === null
   );
   const [longBreakDelay, setLongBreakDelay] = useState(4);
-  const [isLongBreak, setIsLongBreak] = useState({ count: 0, state: false });
+  const [isLongBreak, setIsLongBreak] = useState({
+    count: parseInt(localStorage.getItem("count")) || 0,
+    state: localStorage.getItem("isLongBreak") === "true",
+  });
   const [dailyGoal, setDailyGoal] = useState(null);
   const [isAutoPomodoroChecked, setIsAutoPomodoroChecked] = useState(false);
   const [isAutoBreakChecked, setIsAutoBreakChecked] = useState(false);
@@ -49,6 +50,15 @@ export const TimerContextProvider = ({ children }) => {
     const storedPomodoroTime = localStorage.getItem("pomodoroTime");
     if (storedPomodoroTime) {
       setPomodoroTime(parseInt(storedPomodoroTime));
+    }
+    const storedShortBreakTime = localStorage.getItem("shortBreakTime");
+
+    if (storedShortBreakTime) {
+      setShortBreakTime(parseInt(storedShortBreakTime));
+    }
+    const storedLongBreakTime = localStorage.getItem("longBreakTime");
+    if (storedLongBreakTime) {
+      setLongBreakTime(parseInt(storedLongBreakTime));
     }
   }, []);
 
@@ -142,10 +152,27 @@ export const TimerContextProvider = ({ children }) => {
   }, [pomodoroTime, isDisabled]);
 
   useEffect(() => {
+    localStorage.setItem("shortBreakTime", shortBreakTime);
+    localStorage.setItem("isDisabled", isDisabled);
+  }, [shortBreakTime, isDisabled]);
+
+  useEffect(() => {
+    localStorage.setItem("longBreakTime", longBreakTime);
+    localStorage.setItem("isDisabled", isDisabled);
+  }, [longBreakTime, isDisabled]);
+
+  useEffect(() => {
     localStorage.setItem("initialPomodoro", pomodoro);
     localStorage.setItem("initialShortBreak", shortBreak);
     localStorage.setItem("initialLongBreak", longBreak);
   }, [pomodoro, shortBreak, longBreak]);
+
+  useEffect(() => {
+    localStorage.setItem("isPomodoro", isPomodoro);
+    localStorage.setItem("isBreak", isBreak);
+    localStorage.setItem("isLongBreak", isLongBreak.state);
+    localStorage.setItem("count", isLongBreak.count);
+  }, [isPomodoro]);
 
   useEffect(() => {
     applyQueuedUpdates();
