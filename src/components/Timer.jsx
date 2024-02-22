@@ -409,6 +409,7 @@ const Timer = () => {
           <Button
             onClick={toggle}
             style={{
+              width: "150px",
               color: "#232946",
               paddingLeft: 50,
               paddingRight: 50,
@@ -426,6 +427,7 @@ const Timer = () => {
           <Button
             onClick={toggle}
             style={{
+              width: "150px",
               color: "#232946",
               paddingLeft: 50,
               paddingRight: 50,
@@ -447,6 +449,7 @@ const Timer = () => {
               <Button
                 onClick={skip}
                 style={{
+                  width: "150px",
                   color: "#232946",
                   paddingLeft: 50,
                   paddingRight: 50,
@@ -465,6 +468,7 @@ const Timer = () => {
               <Button
                 onClick={reset}
                 style={{
+                  width: "150px",
                   color: "#232946",
                   paddingLeft: 50,
                   paddingRight: 50,
@@ -484,7 +488,10 @@ const Timer = () => {
                 // aria-disabled={isDisabled}
                 disabled={isDisabled}
                 onClick={autoPomodoro}
-                sx={{ cursor: isDisabled ? "not-allowed" : "pointer" }}
+                sx={{
+                  width: "150px",
+                  cursor: isDisabled ? "not-allowed" : "pointer",
+                }}
                 style={{
                   color: "black",
                   paddingLeft: 50,
