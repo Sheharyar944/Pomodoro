@@ -48,14 +48,14 @@ const Root = () => {
         </Box>
 
         <Box sx={{ display: "flex" }}>
-          {isLoggedIn && (
+          {/* {isLoggedIn && (
             <Button
               onClick={() => navigate(`/Profile/${userDetails.id}`)}
               style={{ color: "black" }}
             >
               {userDetails.email}
             </Button>
-          )}
+          )} */}
           {isLoggedIn ? (
             <DropDownMenu />
           ) : (

@@ -1,11 +1,17 @@
 import "./App.css";
 import React from "react";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Navigate,
+} from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import Root from "./components/Root";
 import SettingsTabs from "./components/SettingsTabs";
+
+const isAuthenticated = false;
 
 const router = createBrowserRouter([
   {
@@ -35,6 +41,14 @@ const router = createBrowserRouter([
       {
         path: "/settings/application",
         element: <SettingsTabs />,
+      },
+      {
+        path: "/private",
+        element: isAuthenticated ? (
+          <SettingsTabs />
+        ) : (
+          <Navigate to="/login" replace />
+        ),
       },
     ],
   },

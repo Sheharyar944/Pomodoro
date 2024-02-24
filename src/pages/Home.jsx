@@ -12,7 +12,7 @@ import MyCarousel from "../components/MyCarousel.jsx";
 const Home = () => {
   const { user, userDetails } = useContext(AuthContext);
   const [task, setTask] = useState("");
-
+  const token = localStorage.getItem("access_token");
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -24,10 +24,15 @@ const Home = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer" + user.access,
+          Authorization: "Bearer " + token,
         },
         body: JSON.stringify({ description: task }),
       });
+      const responseData = await response.json(); // Parse response as JSON
+
+      console.log("Response status:", response.status);
+      console.log("Response data:", responseData);
+
       if (response.ok) {
         console.log("task added successfully");
         setTask("");

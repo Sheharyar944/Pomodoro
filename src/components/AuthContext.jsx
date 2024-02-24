@@ -40,6 +40,46 @@ export const AuthProvider = ({ children }) => {
     setUserDetails({ username, id, email });
   };
 
+  const updateToken = async () => {
+    console.log("update token called");
+    console.log(refresh_token);
+    try {
+      let response = await fetch("http://127.0.0.1:8000/api/token/refresh/", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ refresh: refresh_token }),
+      });
+
+      const data = await response.json();
+      console.log(data);
+
+      if (response.status === 200) {
+        setLoggedUser(data);
+        localStorage.setItem("access_token", data.access);
+        localStorage.setItem("refresh_token", data.refresh);
+      }
+    } catch (error) {
+      console.log("Error while refreshing token", error);
+    } finally {
+      if (loading) {
+        setLoading(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (loading) {
+      updateToken();
+    }
+
+    let intervalId = setInterval(() => {
+      if (user) {
+        updateToken();
+      }
+    }, 14000 * 60);
+    return () => clearInterval(intervalId);
+  }, [token]);
+
   return (
     <AuthContext.Provider
       value={{
@@ -49,6 +89,7 @@ export const AuthProvider = ({ children }) => {
         logout,
         userDetails,
         getDetails,
+        updateToken,
       }}
     >
       {!loading && children}
