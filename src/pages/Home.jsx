@@ -59,9 +59,13 @@ const Home = () => {
       {/* <SettingTabs /> */}
 
       <Box
+        // border={1}
         sx={{
           width: 500,
           maxWidth: "100%",
+          height: "300px",
+          display: "flex",
+          alignItems: "center",
         }}
       >
         <form onSubmit={handleSubmit}>
@@ -73,7 +77,7 @@ const Home = () => {
             value={task}
             type="text"
             placeholder="Write your task..."
-            style={{ borderColor: "black" }}
+            style={{ borderColor: "black", width: "500px" }}
           />
           <Button type="submit">Click</Button>
         </form>

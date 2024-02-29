@@ -15,8 +15,9 @@ import WatchLaterIcon from "@mui/icons-material/WatchLater";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import AppSettingsAltIcon from "@mui/icons-material/AppSettingsAlt";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import PersonIcon from "@mui/icons-material/Person";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 const StyledMenu = styled((props) => (
@@ -84,6 +85,7 @@ export default function DropDownMenu() {
   return (
     <Box>
       <Button
+        startIcon={<AccountCircleIcon />}
         id="demo-customized-button"
         aria-controls={open ? "demo-customized-menu" : undefined}
         aria-haspopup="true"
@@ -91,9 +93,17 @@ export default function DropDownMenu() {
         disableElevation
         onClick={handleClick}
         endIcon={<KeyboardArrowDownIcon />}
-        sx={{ color: "black" }}
+        sx={{
+          color: "#6c6c79",
+          textTransform: "lowercase",
+          margin: "0 10px 0 10px",
+          "&:hover": {
+            color: "black",
+            backgroundColor: "white", // Change text color to black on hover
+          },
+        }}
       >
-        {userDetails.email.toLowerCase()}
+        {userDetails.email}
       </Button>
 
       <StyledMenu
@@ -143,7 +153,7 @@ export default function DropDownMenu() {
           }}
           disableRipple
         >
-          <AccountCircleIcon />
+          <PersonIcon />
           Profile
         </MenuItem>
         <MenuItem

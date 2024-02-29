@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import Header from "../components/Header.jsx";
 import Divider from "@mui/material/Divider";
 import { Box, Button, Typography, IconButton } from "@mui/material";
@@ -15,12 +15,18 @@ import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import MicrosoftIcon from "@mui/icons-material/Microsoft";
 import AppleIcon from "@mui/icons-material/Apple";
 import DropDownMenu from "./DropDownMenu.jsx";
+import SettingsIcon from "@mui/icons-material/Settings";
+import FeedbackIcon from "@mui/icons-material/Feedback";
+import BarChartIcon from "@mui/icons-material/BarChart";
 
 const Root = () => {
   const navigate = useNavigate();
   const logout = useLogout();
   const isLoggedIn = useIsLoggedIn();
   const { userDetails } = useContext(AuthContext);
+
+  const location = useLocation();
+  const { pathname } = location;
 
   const handleLogout = () => {
     logout();
@@ -35,7 +41,7 @@ const Root = () => {
           top: 0,
           left: 0,
           width: "100%",
-          // backgroundColor: "#fff",
+          backgroundColor: "#fff",
           zIndex: 1000,
           display: "flex",
           justifyContent: "space-between",
@@ -56,6 +62,137 @@ const Root = () => {
               {userDetails.email}
             </Button>
           )} */}
+
+          {/* Stats button */}
+          {pathname === "/stats" ? (
+            <Box borderBottom={2} borderColor={"#6c6c79"}>
+              <Button
+                onClick={() => navigate("/stats")}
+                variant="text"
+                startIcon={<BarChartIcon />}
+                sx={{
+                  color: "#6c6c79",
+                  textTransform: "capitalize",
+                  margin: "0 10px 0 10px",
+                  fontSize: "15px",
+                  "&:hover": {
+                    color: "black",
+                    backgroundColor: "white", // Change text color to black on hover
+                  },
+                }}
+              >
+                Stats
+              </Button>
+            </Box>
+          ) : (
+            <Box borderBottom={2} borderColor={"white"}>
+              <Button
+                onClick={() => navigate("/stats")}
+                variant="text"
+                startIcon={<BarChartIcon />}
+                sx={{
+                  color: "#6c6c79",
+                  textTransform: "capitalize",
+                  margin: "0 10px 0 10px",
+                  fontSize: "15px",
+                  "&:hover": {
+                    color: "black",
+                    backgroundColor: "white", // Change text color to black on hover
+                  },
+                }}
+              >
+                Stats
+              </Button>
+            </Box>
+          )}
+
+          {/* Feedback button */}
+
+          {pathname === "/feedback" ? (
+            <Box borderBottom={2} borderColor={"#6c6c79"}>
+              <Button
+                onClick={() => navigate("/feedback")}
+                variant="text"
+                startIcon={<FeedbackIcon />}
+                sx={{
+                  color: "#6c6c79",
+                  textTransform: "capitalize",
+                  margin: "0 10px 0 10px",
+                  fontSize: "15px",
+                  "&:hover": {
+                    color: "black",
+                    backgroundColor: "white", // Change text color to black on hover
+                  },
+                }}
+              >
+                Feedback
+              </Button>
+            </Box>
+          ) : (
+            <Box borderBottom={2} borderColor={"white"}>
+              <Button
+                onClick={() => navigate("/feedback")}
+                variant="text"
+                startIcon={<FeedbackIcon />}
+                sx={{
+                  color: "#6c6c79",
+                  textTransform: "capitalize",
+                  margin: "0 10px 0 10px",
+                  fontSize: "15px",
+                  "&:hover": {
+                    color: "black",
+                    backgroundColor: "white", // Change text color to black on hover
+                  },
+                }}
+              >
+                Feedback
+              </Button>
+            </Box>
+          )}
+
+          {/* settings button */}
+          {pathname === "/settings" ? (
+            <Box borderBottom={2} borderColor={"#6c6c79"}>
+              <Button
+                onClick={() => navigate("/settings")}
+                variant="text"
+                startIcon={<SettingsIcon />}
+                sx={{
+                  color: "#6c6c79",
+                  textTransform: "capitalize",
+                  margin: "0 10px 0 10px",
+                  fontSize: "15px",
+                  "&:hover": {
+                    color: "black",
+                    backgroundColor: "white", // Change text color to black on hover
+                  },
+                }}
+              >
+                Settings
+              </Button>
+            </Box>
+          ) : (
+            <Box borderBottom={2} borderColor={"white"}>
+              <Button
+                onClick={() => navigate("/settings")}
+                variant="text"
+                startIcon={<SettingsIcon />}
+                sx={{
+                  color: "#6c6c79",
+                  textTransform: "capitalize",
+                  margin: "0 10px 0 10px",
+                  fontSize: "15px",
+                  "&:hover": {
+                    color: "black",
+                    backgroundColor: "white", // Change text color to black on hover
+                  },
+                }}
+              >
+                Settings
+              </Button>
+            </Box>
+          )}
+          {/* Drop down menu */}
           {isLoggedIn ? (
             <DropDownMenu />
           ) : (

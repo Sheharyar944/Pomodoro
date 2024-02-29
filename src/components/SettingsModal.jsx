@@ -150,7 +150,7 @@ const SettingsModal = ({
           aria-label="Settings"
           sx={{ color: "black" }}
         >
-          <SettingsIcon />
+          <SettingsIcon fontSize="medium" />
         </IconButton>
       </ToolTip>
       <Modal
