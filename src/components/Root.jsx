@@ -18,6 +18,7 @@ import DropDownMenu from "./DropDownMenu.jsx";
 import SettingsIcon from "@mui/icons-material/Settings";
 import FeedbackIcon from "@mui/icons-material/Feedback";
 import BarChartIcon from "@mui/icons-material/BarChart";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 const Root = () => {
   const navigate = useNavigate();
@@ -197,11 +198,19 @@ const Root = () => {
             <DropDownMenu />
           ) : (
             <Button
+              startIcon={<AccountCircleIcon />}
               onClick={() => navigate("/login")}
               variant="text"
-              style={{ color: "black" }}
+              sx={{
+                color: "#6c6c79",
+                textTransform: "none",
+                "&:hover": {
+                  color: "black",
+                  backgroundColor: "white", // Change text color to black on hover
+                },
+              }}
             >
-              Login
+              {`Sign up / Sign in`}
             </Button>
           )}
         </Box>
