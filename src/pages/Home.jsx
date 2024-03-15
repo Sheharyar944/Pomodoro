@@ -1,18 +1,32 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import Timer from "../components/Timer.jsx";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
-
 import { AuthContext } from "../components/AuthContext.jsx";
 import { Button } from "@mui/material";
-import SettingTabs from "../components/SettingsTabs.jsx";
-import axios from "axios";
 import MyCarousel from "../components/MyCarousel.jsx";
+import useGetSettings from "../hooks/useGetSettings.jsx";
+import { TimerContext } from "../components/TimerContext.jsx";
 
 const Home = () => {
   const { user, userDetails } = useContext(AuthContext);
+  const { isPomodoro } = useContext(TimerContext);
   const [task, setTask] = useState("");
   const token = localStorage.getItem("access_token");
+  const { saveSettings, getSettings, getModes, loading } = useGetSettings();
+
+  useEffect(() => {
+    if (user && !loading) {
+      saveSettings();
+    }
+  }, [isPomodoro]);
+
+  useEffect(() => {
+    if (user) {
+      getSettings();
+    }
+  }, []);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -82,6 +96,14 @@ const Home = () => {
           <Button type="submit">Click</Button>
         </form>
       </Box>
+      <Button
+        onClick={() => {
+          getModes();
+        }}
+      >
+        {" "}
+        get modes
+      </Button>
     </Box>
   );
 };

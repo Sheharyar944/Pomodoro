@@ -123,14 +123,6 @@ const Register = () => {
             <Typography variant="body1" color="initial">
               Pomodoro Tracker
             </Typography>
-            <IconButton
-              color="primary"
-              sx={{ marginLeft: "auto" }}
-              aria-label=""
-              onClick={() => navigate("/login")}
-            >
-              <ArrowBackIcon />
-            </IconButton>
           </Box>
           <Typography variant="h5" color="initial">
             Create account
@@ -195,18 +187,32 @@ const Register = () => {
               </FormHelperText>
             )}
           </FormControl>
-          <Button
-            sx={{
-              width: "100px",
-              marginLeft: "250px",
-              borderRadius: "0px",
-              marginTop: "auto",
-            }}
-            type="submit"
-            variant="contained"
-          >
-            Sign Up
-          </Button>
+          <Box sx={{ display: "flex", marginTop: "auto" }}>
+            <Button
+              onClick={() => navigate("/login")}
+              sx={{
+                marginTop: "auto",
+                width: "100px",
+                marginLeft: "auto",
+                borderRadius: "0px",
+              }}
+              variant="contained"
+            >
+              Back
+            </Button>
+            <Button
+              sx={{
+                width: "100px",
+                marginLeft: "20px",
+                borderRadius: "0px",
+                marginTop: "auto",
+              }}
+              type="submit"
+              variant="contained"
+            >
+              Sign Up
+            </Button>
+          </Box>
         </Box>
       </form>
     </Box>

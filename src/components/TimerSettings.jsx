@@ -4,28 +4,31 @@ import { TextField } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import MyToggle from "./MyToggle";
 import MyToggleButton from "./MyToggleButton";
+import { TimerContext } from "./TimerContext";
+import useGetSettings from "../hooks/useGetSettings";
 
-const TimerSettings = ({
-  setLongBreakDelay,
-  isAutoPomodoroChecked,
-  setIsAutoPomodoroChecked,
-  isAutoBreakChecked,
-  setIsAutoBreakChecked,
-  pomodoro,
-  setPomodoro,
-  setInitialPomodoro,
-  setInitialShortBreak,
-  setInitialLongBreak,
-  longBreakDelayValue,
-  setLongBreakDelayValue,
-  shortBreak,
-  setShortBreak,
-  longBreak,
-  setLongBreak,
-  setDailyGoalValue,
-  dailyGoalValue,
-}) => {
+const TimerSettings = ({ handleClose }) => {
+  const {
+    longBreakDelay,
+    setLongBreakDelay,
+    isAutoPomodoroChecked,
+    setIsAutoPomodoroChecked,
+    isAutoBreakChecked,
+    setIsAutoBreakChecked,
+    pomodoro,
+    setPomodoro,
+    shortBreak,
+    setShortBreak,
+    longBreak,
+    setLongBreak,
+    setInitialPomodoro,
+    setInitialShortBreak,
+    setInitialLongBreak,
+    dailyGoal,
+    setDailyGoal,
+  } = useContext(TimerContext);
   const [isClassicChecked, setIsClassicChecked] = useState(false);
+  const { getModes } = useGetSettings();
 
   useEffect(() => {
     if (isClassicChecked) {
@@ -46,10 +49,10 @@ const TimerSettings = ({
     setLongBreak(e.target.value * 60);
   };
   const handleLongBreakDelayChange = (e) => {
-    setLongBreakDelayValue(e.target.value);
+    setLongBreakDelay(e.target.value);
   };
   const handleDailyGoalChange = (e) => {
-    setDailyGoalValue(e.target.value);
+    setDailyGoal(e.target.value);
   };
 
   const handleSubmit = async (event) => {
@@ -117,6 +120,7 @@ const TimerSettings = ({
               id="outlined-basic"
               value={pomodoro / 60}
               onChange={handlePomodoroChange}
+              onBlur={handleClose}
               variant="outlined"
               fullWidth={true}
               sx={{
@@ -177,6 +181,7 @@ const TimerSettings = ({
               id="outlined-basic"
               value={shortBreak / 60}
               onChange={handleShortBreakTimeChange}
+              onBlur={handleClose}
               variant="outlined"
               fullWidth={true}
               sx={{
@@ -235,6 +240,7 @@ const TimerSettings = ({
               id="outlined-basic"
               value={longBreak / 60}
               onChange={handleLongBreakTimeChange}
+              onBlur={handleClose}
               variant="outlined"
               fullWidth={true}
               sx={{
@@ -274,7 +280,7 @@ const TimerSettings = ({
         >
           <Box sx={{ flex: 1 }}>
             <Typography variant="body1" color="initial">
-              Short break delay:
+              Long break delay:
             </Typography>
           </Box>
           <Box
@@ -291,8 +297,9 @@ const TimerSettings = ({
           >
             <TextField
               id="outlined-basic"
-              value={longBreakDelayValue}
+              value={longBreakDelay}
               onChange={handleLongBreakDelayChange}
+              onBlur={handleClose}
               variant="outlined"
               fullWidth={true}
               sx={{
@@ -349,8 +356,9 @@ const TimerSettings = ({
           >
             <TextField
               id="outlined-basic"
-              value={dailyGoalValue}
+              value={dailyGoal}
               onChange={handleDailyGoalChange}
+              onBlur={handleClose}
               variant="outlined"
               fullWidth={true}
               sx={{

@@ -31,6 +31,7 @@ const useLogin = () => {
         response.data.user.id,
         response.data.user.email
       );
+      return response;
       navigate("/");
     } catch (error) {
       console.log("Error", error);

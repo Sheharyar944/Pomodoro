@@ -10,6 +10,8 @@ import NotificationSettings from "./NotificationSettings";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Box, Button, IconButton, Typography } from "@mui/material";
 import { TimerContext } from "./TimerContext";
+import { AuthContext } from "./AuthContext";
+import useGetSettings from "../hooks/useGetSettings";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -35,69 +37,42 @@ CustomTabPanel.propTypes = {
 
 const SettingsTabs = () => {
   const {
-    pomodoroTime,
     setPomodoroTime,
-    shortBreakTime,
     setShortBreakTime,
-    longBreakTime,
     setLongBreakTime,
     isActive,
-    setIsActive,
     isBreak,
-    setIsBreak,
     isPomodoro,
-    setIsPomodoro,
     isDisabled,
-    setIsDisabled,
     longBreakDelay,
     setLongBreakDelay,
-    isLongBreak,
-    setIsLongBreak,
-    dailyGoal,
     setDailyGoal,
-    isAutoPomodoroChecked,
-    setIsAutoPomodoroChecked,
-    isAutoBreakChecked,
-    setIsAutoBreakChecked,
     pomodoro,
     setPomodoro,
+    shortBreak,
+    setShortBreak,
+    longBreak,
+    setLongBreak,
     initialPomodoro,
     setInitialPomodoro,
     initialShortBreak,
     setInitialShortBreak,
     initialLongBreak,
     setInitialLongBreak,
-    updateQueue,
-    setUpdateQueue,
-    updateShortBreakQueue,
-    setUpdateShortBreakQueue,
-    updateLongBreakQueue,
-    setUpdateLongBreakQueue,
     playAlarmSound,
     setPlayAlarmSound,
-
     queueUpdate,
-    autoPomodoro,
-    autoOffPomodoro,
-    toggle,
-    reset,
-    longBreakCount,
-    skip,
-    forward,
-    add,
-    isDailyGoalReached,
-    playBell,
-    formatTime,
   } = useContext(TimerContext);
   const [open, setOpen] = React.useState(false);
   const [longBreakDelayValue, setLongBreakDelayValue] = useState(0);
-  const [shortBreak, setShortBreak] = useState(0);
-  const [longBreak, setLongBreak] = useState(0);
+
   const [dailyGoalValue, setDailyGoalValue] = useState(0);
   const [value, setValue] = React.useState(0);
   const navigate = useNavigate();
   const location = useLocation();
   const { pathname } = location;
+  const { user } = useContext(AuthContext);
+  const { saveSettings } = useGetSettings();
 
   useEffect(() => {
     setPomodoro(initialPomodoro);
@@ -112,6 +87,8 @@ const SettingsTabs = () => {
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
+    console.log("inputfield has lose focus");
+
     queueUpdate(parseInt(pomodoro), parseInt(shortBreak), parseInt(longBreak));
 
     if (!isActive && isDisabled) {
@@ -134,6 +111,12 @@ const SettingsTabs = () => {
     setLongBreakDelay(longBreakDelayValue);
     setDailyGoal(dailyGoalValue);
     setOpen(false);
+
+    if (user) {
+      setTimeout(() => {
+        saveSettings();
+      }, 0);
+    }
   };
 
   const handleChange = (event, newValue) => {
@@ -189,26 +172,7 @@ const SettingsTabs = () => {
         </Box>
 
         <CustomTabPanel value={value} index={0}>
-          <TimerSettings
-            setLongBreakDelay={setLongBreakDelay}
-            isAutoPomodoroChecked={isAutoPomodoroChecked}
-            setIsAutoPomodoroChecked={setIsAutoPomodoroChecked}
-            isAutoBreakChecked={isAutoBreakChecked}
-            setIsAutoBreakChecked={setIsAutoBreakChecked}
-            pomodoro={pomodoro}
-            setPomodoro={setPomodoro}
-            setInitialPomodoro={setInitialPomodoro}
-            setInitialShortBreak={setInitialShortBreak}
-            setInitialLongBreak={setInitialLongBreak}
-            longBreakDelayValue={longBreakDelayValue}
-            setLongBreakDelayValue={setLongBreakDelayValue}
-            shortBreak={shortBreak}
-            setShortBreak={setShortBreak}
-            longBreak={longBreak}
-            setLongBreak={setLongBreak}
-            dailyGoalValue={dailyGoalValue}
-            setDailyGoalValue={setDailyGoalValue}
-          />
+          <TimerSettings handleClose={handleClose} />
         </CustomTabPanel>
 
         <CustomTabPanel value={value} index={1}>
@@ -222,7 +186,7 @@ const SettingsTabs = () => {
           Item Three
         </CustomTabPanel>
 
-        <Box>
+        {/* <Box>
           <Button
             onClick={() => {
               handleClose();
@@ -241,7 +205,7 @@ const SettingsTabs = () => {
           >
             Exit
           </Button>
-        </Box>
+        </Box> */}
       </Box>
     </Box>
   );

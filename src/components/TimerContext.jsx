@@ -1,13 +1,18 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect, useContext } from "react";
 import soundUrl from "../assets/sounds/bell1.wav";
+import { AuthContext } from "./AuthContext";
+import useGetSettings from "../hooks/useGetSettings";
 
 export const TimerContext = createContext();
 
 export const TimerContextProvider = ({ children }) => {
+  const { user } = useContext(AuthContext);
   const [pomodoroTime, setPomodoroTime] = useState(5);
   const [shortBreakTime, setShortBreakTime] = useState(3);
   const [longBreakTime, setLongBreakTime] = useState(5);
-  const [isActive, setIsActive] = useState(false);
+  const [isActive, setIsActive] = useState(
+    localStorage.getItem("isActive") === "true"
+  );
   const [isBreak, setIsBreak] = useState(
     localStorage.getItem("isBreak") === "true"
   );
@@ -24,9 +29,13 @@ export const TimerContextProvider = ({ children }) => {
     count: parseInt(localStorage.getItem("count")) || 0,
     state: localStorage.getItem("isLongBreak") === "true",
   });
-  const [dailyGoal, setDailyGoal] = useState(null);
-  const [isAutoPomodoroChecked, setIsAutoPomodoroChecked] = useState(false);
-  const [isAutoBreakChecked, setIsAutoBreakChecked] = useState(false);
+  const [dailyGoal, setDailyGoal] = useState(1);
+  const [isAutoPomodoroChecked, setIsAutoPomodoroChecked] = useState(
+    localStorage.getItem("auto_start_pomodoro") === "true"
+  );
+  const [isAutoBreakChecked, setIsAutoBreakChecked] = useState(
+    localStorage.getItem("auto_start_break") === "true"
+  );
   const [pomodoro, setPomodoro] = useState(0);
   const [shortBreak, setShortBreak] = useState(0);
   const [longBreak, setLongBreak] = useState(0);
@@ -43,6 +52,7 @@ export const TimerContextProvider = ({ children }) => {
   const [updateShortBreakQueue, setUpdateShortBreakQueue] = useState([]);
   const [updateLongBreakQueue, setUpdateLongBreakQueue] = useState([]);
   const [playAlarmSound, setPlayAlarmSound] = useState(true);
+  // const { saveSettings } = useGetSettings();
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -62,20 +72,9 @@ export const TimerContextProvider = ({ children }) => {
     }
   }, []);
 
-  /////////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////
-
   useEffect(() => {
     // Exit early when we reach 0
-    console.log("Component mounted");
-
-    // if (pomodoroTime == 0) {
-    //   console.log("pomodoroTime", pomodoroTime);
-    //   autoPomodoro();
-    // }
-
     let intervalId = null;
-
     // Save intervalId to clear the interval when the component re-renders
     if (isActive) {
       if (isPomodoro) {
@@ -141,38 +140,64 @@ export const TimerContextProvider = ({ children }) => {
 
     return () => {
       clearInterval(intervalId);
-      // setMounted(false);
-      console.log("Component will unmount");
     };
   }, [isActive, isPomodoro, isAutoPomodoroChecked, isAutoBreakChecked]);
 
   useEffect(() => {
-    localStorage.setItem("pomodoroTime", pomodoroTime);
-    localStorage.setItem("isDisabled", isDisabled);
+    {
+      localStorage.setItem("isActive", isActive);
+    }
+  }, [isActive]);
+
+  useEffect(() => {
+    {
+      localStorage.setItem("pomodoroTime", pomodoroTime);
+      localStorage.setItem("isDisabled", isDisabled);
+    }
   }, [pomodoroTime, isDisabled]);
 
   useEffect(() => {
-    localStorage.setItem("shortBreakTime", shortBreakTime);
-    localStorage.setItem("isDisabled", isDisabled);
+    {
+      localStorage.setItem("shortBreakTime", shortBreakTime);
+      localStorage.setItem("isDisabled", isDisabled);
+    }
   }, [shortBreakTime, isDisabled]);
 
   useEffect(() => {
-    localStorage.setItem("longBreakTime", longBreakTime);
-    localStorage.setItem("isDisabled", isDisabled);
+    {
+      localStorage.setItem("longBreakTime", longBreakTime);
+      localStorage.setItem("isDisabled", isDisabled);
+    }
   }, [longBreakTime, isDisabled]);
 
   useEffect(() => {
-    localStorage.setItem("initialPomodoro", pomodoro);
-    localStorage.setItem("initialShortBreak", shortBreak);
-    localStorage.setItem("initialLongBreak", longBreak);
+    {
+      localStorage.setItem("initialPomodoro", pomodoro);
+      localStorage.setItem("initialShortBreak", shortBreak);
+      localStorage.setItem("initialLongBreak", longBreak);
+    }
   }, [pomodoro, shortBreak, longBreak]);
 
   useEffect(() => {
-    localStorage.setItem("isPomodoro", isPomodoro);
-    localStorage.setItem("isBreak", isBreak);
-    localStorage.setItem("isLongBreak", isLongBreak.state);
-    localStorage.setItem("count", isLongBreak.count);
+    {
+      localStorage.setItem("isPomodoro", isPomodoro);
+      localStorage.setItem("isBreak", isBreak);
+      localStorage.setItem("isLongBreak", isLongBreak.state);
+      localStorage.setItem("count", isLongBreak.count);
+    }
   }, [isPomodoro]);
+
+  useEffect(() => {
+    {
+      localStorage.setItem("auto_start_pomodoro", isAutoPomodoroChecked);
+    }
+  }, [isAutoPomodoroChecked]);
+
+  useEffect(() => {
+    {
+      localStorage.setItem("auto_start_break", isAutoBreakChecked);
+    }
+  }, [isAutoBreakChecked]);
 
   useEffect(() => {
     applyQueuedUpdates();
@@ -254,7 +279,7 @@ export const TimerContextProvider = ({ children }) => {
       }));
       const i = isLongBreak.count + 1;
 
-      if (i == longBreakDelay) {
+      if (i >= longBreakDelay) {
         setIsLongBreak((prevState) => ({
           ...prevState,
           state: true,

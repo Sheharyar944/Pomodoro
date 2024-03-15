@@ -14,6 +14,9 @@ import Typography from "@mui/material/Typography";
 import ToolTip from "./ToolTip";
 import TimerSettings from "./TimerSettings";
 import NotificationSettings from "./NotificationSettings";
+import useGetSettings from "../hooks/useGetSettings";
+import { AuthContext } from "./AuthContext";
+import { TimerContext } from "./TimerContext";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -61,57 +64,45 @@ const style = {
   padding: "15px",
 };
 
-const SettingsModal = ({
-  pomodoroTime,
-  setPomodoroTime,
-  shortBreakTime,
-  setShortBreakTime,
-  longBreakTime,
-  setLongBreakTime,
-  longBreakDelay,
-  setLongBreakDelay,
-  setDailyGoal,
-  isAutoPomodoroChecked,
-  setIsAutoPomodoroChecked,
-  isActive,
-  pomodoro,
-  setPomodoro,
-  shortBreak,
-  setShortBreak,
-  longBreak,
-  setLongBreak,
-  initialPomodoro,
-  setInitialPomodoro,
-  initialShortBreak,
-  setInitialShortBreak,
-  initialLongBreak,
-  setInitialLongBreak,
-  queueUpdate,
-  isDisabled,
-  isPomodoro,
-  isBreak,
-  isAutoBreakChecked,
-  setIsAutoBreakChecked,
-  playAlarmSound,
-  setPlayAlarmSound,
-}) => {
+const SettingsModal = () => {
+  const {
+    setPomodoroTime,
+    setShortBreakTime,
+    setLongBreakTime,
+    isActive,
+    isBreak,
+    isPomodoro,
+    isDisabled,
+    pomodoro,
+    setPomodoro,
+    shortBreak,
+    setShortBreak,
+    longBreak,
+    setLongBreak,
+    initialPomodoro,
+    setInitialPomodoro,
+    initialShortBreak,
+    setInitialShortBreak,
+    initialLongBreak,
+    setInitialLongBreak,
+    playAlarmSound,
+    setPlayAlarmSound,
+    queueUpdate,
+  } = useContext(TimerContext);
+
   const [open, setOpen] = React.useState(false);
-  const [longBreakDelayValue, setLongBreakDelayValue] = useState(0);
-  // const [shortBreak, setShortBreak] = useState(0);
-  // const [longBreak, setLongBreak] = useState(0);
-  const [dailyGoalValue, setDailyGoalValue] = useState(0);
+  // const [dailyGoalValue, setDailyGoalValue] = useState(1);
+  const { saveSettings } = useGetSettings();
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
-    console.log("mounts ");
     setPomodoro(initialPomodoro);
     setShortBreak(initialShortBreak);
     setLongBreak(initialLongBreak);
-    setLongBreakDelayValue(longBreakDelay);
   }, []);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
-    // setTimeLeft(pomodoro);
     queueUpdate(parseInt(pomodoro), parseInt(shortBreak), parseInt(longBreak));
 
     if (!isActive && isDisabled) {
@@ -131,9 +122,12 @@ const SettingsModal = ({
     setInitialLongBreak(longBreak);
     setInitialShortBreak(shortBreak);
 
-    setLongBreakDelay(longBreakDelayValue);
-    setDailyGoal(dailyGoalValue);
     setOpen(false);
+    if (user) {
+      setTimeout(() => {
+        saveSettings();
+      }, 0);
+    }
   };
 
   const [value, setValue] = React.useState(0);
@@ -213,26 +207,7 @@ const SettingsModal = ({
               </Tabs>
             </Box>
             <CustomTabPanel value={value} index={0}>
-              <TimerSettings
-                setLongBreakDelay={setLongBreakDelay}
-                isAutoPomodoroChecked={isAutoPomodoroChecked}
-                setIsAutoPomodoroChecked={setIsAutoPomodoroChecked}
-                isAutoBreakChecked={isAutoBreakChecked}
-                setIsAutoBreakChecked={setIsAutoBreakChecked}
-                pomodoro={pomodoro}
-                setPomodoro={setPomodoro}
-                setInitialPomodoro={setInitialPomodoro}
-                setInitialShortBreak={setInitialShortBreak}
-                setInitialLongBreak={setInitialLongBreak}
-                longBreakDelayValue={longBreakDelayValue}
-                setLongBreakDelayValue={setLongBreakDelayValue}
-                shortBreak={shortBreak}
-                setShortBreak={setShortBreak}
-                longBreak={longBreak}
-                setLongBreak={setLongBreak}
-                dailyGoalValue={dailyGoalValue}
-                setDailyGoalValue={setDailyGoalValue}
-              />
+              <TimerSettings />
             </CustomTabPanel>
 
             <CustomTabPanel value={value} index={1}>

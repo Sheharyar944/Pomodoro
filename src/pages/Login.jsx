@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Button, Typography } from "@mui/material";
 import useLogin from "../hooks/useLogin";
@@ -15,10 +15,10 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const Login = () => {
   const [showPassword, setShowPassword] = React.useState(false);
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("ucomsats@gmail.com");
+  const [password, setPassword] = useState("abcd1437");
   const { loginUser } = useLogin();
+
   let navigate = useNavigate();
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -35,39 +35,14 @@ const Login = () => {
     setPassword(e.target.value);
   };
 
-  // const loginUser = async () => {
-  //   try {
-  //     const response = await axios.post(
-  //       "http://127.0.0.1:8000/users/auth/login/",
-  //       {
-  //         email,
-  //         password,
-  //       }
-  //     );
-
-  //     localStorage.setItem("access_token", response.data.access);
-  //     localStorage.setItem("refresh_token", response.data.refresh);
-  //     localStorage.setItem("username", response.data.user.username);
-  //     localStorage.setItem("id", response.data.user.id);
-  //     localStorage.setItem("email", response.data.user.email);
-
-  //     console.log(response.data);
-  //     setLoggedUser(response.data);
-  //     getDetails(
-  //       response.data.user.username,
-  //       response.data.user.id,
-  //       response.data.user.email
-  //     );
-
-  //     navigate("/");
-  //   } catch (error) {
-  //     console.log("Error", error);
-  //   }
-  // };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await loginUser(email, password);
+    try {
+      await loginUser(email, password);
+    } catch (error) {
+      // Handle any errors that occur during login or fetching settings
+      console.error("Error:", error);
+    }
   };
 
   return (
@@ -106,14 +81,6 @@ const Login = () => {
               <Typography variant="body1" color="initial">
                 Pomodoro Tracker
               </Typography>
-              <IconButton
-                color="primary"
-                sx={{ marginLeft: "auto" }}
-                aria-label=""
-                onClick={() => navigate("/")}
-              >
-                <ArrowBackIcon />
-              </IconButton>
             </Box>
             <Typography variant="h5" color="initial">
               Sign in
@@ -176,19 +143,33 @@ const Login = () => {
                 {`Create one!`}
               </Button>
             </Typography>
+            <Box sx={{ display: "flex", marginTop: "auto" }}>
+              <Button
+                onClick={() => navigate("/")}
+                sx={{
+                  marginTop: "auto",
+                  width: "100px",
+                  marginLeft: "auto",
+                  borderRadius: "0px",
+                }}
+                variant="contained"
+              >
+                Back
+              </Button>
 
-            <Button
-              sx={{
-                marginTop: "auto",
-                width: "100px",
-                marginLeft: "250px",
-                borderRadius: "0px",
-              }}
-              type="submit"
-              variant="contained"
-            >
-              Log in
-            </Button>
+              <Button
+                sx={{
+                  marginTop: "auto",
+                  width: "100px",
+                  marginLeft: "10px",
+                  borderRadius: "0px",
+                }}
+                type="submit"
+                variant="contained"
+              >
+                Log in
+              </Button>
+            </Box>
           </Box>
         </form>
       </Box>

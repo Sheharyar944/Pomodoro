@@ -79,7 +79,8 @@ export default function DropDownMenu() {
 
   const handleLogout = () => {
     logout();
-    navigate("/");
+    window.location.reload();
+    // navigate("/");
   };
 
   return (
