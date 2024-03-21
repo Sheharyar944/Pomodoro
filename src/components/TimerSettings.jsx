@@ -46,6 +46,7 @@ const TimerSettings = ({ handleClose }) => {
   const [prevLongBreakDelay, setPrevLongBreakDelay] = useState(longBreakDelay);
   const [prevMode, setPrevMode] = useState(alignment);
   const [isInputFocused, setIsInputFocused] = useState(false);
+  console.log("modes", modes);
 
   useEffect(() => {
     setPrevPomodoro(pomodoro);
@@ -131,24 +132,6 @@ const TimerSettings = ({ handleClose }) => {
   const handleAutoBreak = (event) => {
     setIsAutoBreakChecked(event.target.checked);
   };
-
-  // console.log(isInputFocused);
-  // useEffect(() => {
-  //   console.log("isInputFocused", isInputFocused);
-  //   if (!modesLoading && !isInputFocused) {
-  //     saveSettings(alignment);
-  //   }
-  //   const handleClickOutside = (event) => {
-  //     console.log("handleClickOutside is called");
-  //     if (inputRef.current && !inputRef.current.contains(event.target)) {
-  //       setIsInputFocused(false);
-  //     }
-  //   };
-  //   document.body.addEventListener("click", handleClickOutside);
-  //   return () => {
-  //     document.body.removeEventListener("click", handleClickOutside);
-  //   };
-  // }, [isInputFocused]);
 
   const Modes = () => (
     <Box>

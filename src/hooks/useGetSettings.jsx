@@ -10,6 +10,9 @@ const useGetSettings = () => {
   const [selectedMode, setSelectedMode] = useState(null);
 
   const {
+    pomodoroTime,
+    longBreakTime,
+    shortBreakTime,
     pomodoro,
     shortBreak,
     longBreak,
@@ -36,6 +39,8 @@ const useGetSettings = () => {
     setIsAutoBreakChecked,
     setLongBreakDelay,
     setDailyGoal,
+    setIsDisabled,
+    isDisabled,
   } = useContext(TimerContext);
 
   const saveSettings = async (
@@ -46,6 +51,11 @@ const useGetSettings = () => {
     prevLongBreak = longBreak,
     prevLongBreakDelay = longBreakDelay
   ) => {
+    const currentTime = () => {
+      if (isPomodoro) return pomodoroTime;
+      else if (isLongBreak.state) return longBreakTime;
+      else return shortBreakTime;
+    };
     try {
       const selected = prevAlignment !== alignment ? false : true;
       const response = await axios.post(
@@ -63,6 +73,8 @@ const useGetSettings = () => {
           auto_start_pomodoro: isAutoPomodoroChecked,
           auto_start_break: isAutoBreakChecked,
           is_selected: selected,
+          current_time: currentTime(),
+          is_disabled: isDisabled,
         }
       );
       setModes((prevModes) => {
@@ -116,9 +128,9 @@ const useGetSettings = () => {
       );
       localStorage.setItem("auto_start_break", response.data.auto_start_break);
 
-      setPomodoroTime(response.data.pomodoro_duration);
-      setShortBreakTime(response.data.short_break_duration);
-      setLongBreakTime(response.data.long_break_duration);
+      //   setPomodoroTime(response.data.pomodoro_duration);
+      //   setShortBreakTime(response.data.short_break_duration);
+      //   setLongBreakTime(response.data.long_break_duration);
       setInitialPomodoro(response.data.pomodoro_duration);
       setInitialShortBreak(response.data.short_break_duration);
       setInitialLongBreak(response.data.long_break_duration);
@@ -146,11 +158,15 @@ const useGetSettings = () => {
     }
   };
 
-  const getModes = async () => {
+  const getModes = async (userID = userDetails.id) => {
+    const pomodoroTime = localStorage.getItem("pomodoroTime");
+    const shortBreakTime = localStorage.getItem("shortBreakTime");
+    const longBreakTime = localStorage.getItem("longBreakTime");
+
     try {
       //   setLoading(true);
       const response = await axios.get(
-        `http://127.0.0.1:8000/pomodoro/${userDetails.id}/`
+        `http://127.0.0.1:8000/pomodoro/${userID}/`
       );
 
       setModes(response.data);
@@ -158,6 +174,7 @@ const useGetSettings = () => {
       const selectedMode = response.data.find((mode) => mode.is_selected);
 
       setSelectedMode(selectedMode);
+
       localStorage.setItem("pomodoro", selectedMode.pomodoro_duration);
       localStorage.setItem("shortBreak", selectedMode.short_break_duration);
       localStorage.setItem("longBreak", selectedMode.long_break_duration);
@@ -172,10 +189,20 @@ const useGetSettings = () => {
         selectedMode.auto_start_pomodoro
       );
       localStorage.setItem("auto_start_break", selectedMode.auto_start_break);
+      localStorage.setItem("isDisabled", selectedMode.is_disabled);
+      if (pomodoroTime) {
+        setPomodoroTime(pomodoroTime);
+      }
+      if (shortBreakTime) {
+        setShortBreakTime(shortBreakTime);
+      }
+      if (longBreakTime) {
+        setLongBreakTime(longBreakTime);
+      }
 
-      setPomodoroTime(selectedMode.pomodoro_duration);
-      setShortBreakTime(selectedMode.short_break_duration);
-      setLongBreakTime(selectedMode.long_break_duration);
+      //   setPomodoroTime(selectedMode.pomodoro_duration);
+      //   setShortBreakTime(selectedMode.short_break_duration);
+      //   setLongBreakTime(selectedMode.long_break_duration);
       setInitialPomodoro(selectedMode.pomodoro_duration);
       setInitialShortBreak(selectedMode.short_break_duration);
       setInitialLongBreak(selectedMode.long_break_duration);
@@ -193,6 +220,7 @@ const useGetSettings = () => {
       setDailyGoal(selectedMode.daily_goal);
       setIsAutoBreakChecked(selectedMode.auto_start_break);
       setIsAutoPomodoroChecked(selectedMode.auto_start_pomodoro);
+      setIsDisabled(selectedMode.is_disabled);
 
       return response;
     } catch (error) {

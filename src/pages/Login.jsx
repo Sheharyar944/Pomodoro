@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Button, Typography } from "@mui/material";
 import useLogin from "../hooks/useLogin";
@@ -11,13 +11,23 @@ import IconButton from "@mui/material/IconButton";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import useGetSettings from "../hooks/useGetSettings";
+import { TimerContext } from "../components/TimerContext";
 
 const Login = () => {
   const [showPassword, setShowPassword] = React.useState(false);
   const [email, setEmail] = useState("ucomsats@gmail.com");
   const [password, setPassword] = useState("abcd1437");
   const { loginUser } = useLogin();
+  const { getModes } = useGetSettings();
+  const {
+    setPomodoroTime,
+    setShortBreakTime,
+    setLongBreakTime,
+    isPomodoro,
+    isLongBreak,
+    isBreak,
+  } = useContext(TimerContext);
 
   let navigate = useNavigate();
 
@@ -38,9 +48,25 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await loginUser(email, password);
+      const response = await loginUser(email, password);
+      const res = await getModes(response.data.user.id);
+      const selectedMode = res.data.find((mode) => mode.is_selected);
+      if (selectedMode.is_pomodoro) {
+        setPomodoroTime(selectedMode.current_time);
+      } else {
+        setPomodoroTime(selectedMode.pomodoro_duration);
+      }
+      if (selectedMode.is_long_break) {
+        setLongBreakTime(selectedMode.current_time);
+      } else {
+        setLongBreakTime(selectedMode.long_break_duration);
+      }
+      if (selectedMode.is_break) {
+        setShortBreakTime(selectedMode.current_time);
+      } else {
+        setShortBreakTime(selectedMode.short_break_duration);
+      }
     } catch (error) {
-      // Handle any errors that occur during login or fetching settings
       console.error("Error:", error);
     }
   };

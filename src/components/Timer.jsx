@@ -6,6 +6,7 @@ import AddIcon from "@mui/icons-material/Add";
 import ToolTip from "./ToolTip";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import { TimerContext } from "./TimerContext";
+import useGetSettings from "../hooks/useGetSettings";
 
 const Timer = () => {
   const {
@@ -24,9 +25,10 @@ const Timer = () => {
     add,
     isDailyGoalReached,
     formatTime,
+    alignment,
   } = useContext(TimerContext);
   let content;
-
+  const { saveSettings } = useGetSettings();
   const navigate = useNavigate();
 
   if (isLongBreak.state) {
@@ -37,6 +39,10 @@ const Timer = () => {
     content = "Pomodoro";
   }
 
+  const handleClick = () => {
+    toggle();
+    saveSettings(alignment);
+  };
   return (
     <Box width={750} border={1} marginTop={10} marginBottom={5}>
       <Box sx={{ display: "flex", justifyContent: "space-between" }}>
@@ -86,7 +92,7 @@ const Timer = () => {
       >
         {isActive ? (
           <Button
-            onClick={toggle}
+            onClick={handleClick}
             style={{
               width: "150px",
               color: "#232946",

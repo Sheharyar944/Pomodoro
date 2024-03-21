@@ -49,11 +49,8 @@ const Register = () => {
       setError(error);
       if (error.response.data.username) {
         setUsernameError(true);
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
+
         console.log("Error:", error.response.data.username[0]);
-        // Display error message to the user
-        // alert(error.response.data.detail);
       }
       if (error.response.data.email) {
         setEmailError(true);

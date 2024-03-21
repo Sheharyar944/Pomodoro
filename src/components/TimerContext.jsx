@@ -1,15 +1,14 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import soundUrl from "../assets/sounds/bell1.wav";
 import { AuthContext } from "./AuthContext";
-import useGetSettings from "../hooks/useGetSettings";
 
 export const TimerContext = createContext();
 
 export const TimerContextProvider = ({ children }) => {
   const { user } = useContext(AuthContext);
-  const [pomodoroTime, setPomodoroTime] = useState(5);
-  const [shortBreakTime, setShortBreakTime] = useState(3);
-  const [longBreakTime, setLongBreakTime] = useState(5);
+  const [pomodoroTime, setPomodoroTime] = useState(50);
+  const [shortBreakTime, setShortBreakTime] = useState(30);
+  const [longBreakTime, setLongBreakTime] = useState(50);
   const [isActive, setIsActive] = useState(
     localStorage.getItem("isActive") === "true"
   );
@@ -54,26 +53,22 @@ export const TimerContextProvider = ({ children }) => {
   const [playAlarmSound, setPlayAlarmSound] = useState(true);
   const [alignment, setAlignment] = React.useState("classic");
 
-  // const { saveSettings } = useGetSettings();
+  // useEffect(() => {
+  //   const storedPomodoroTime = localStorage.getItem("pomodoro");
+  //   if (storedPomodoroTime) {
+  //     setPomodoroTime(parseInt(storedPomodoroTime));
+  //   }
+  //   const storedShortBreakTime = localStorage.getItem("shortBreak");
 
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+  //   if (storedShortBreakTime) {
+  //     setShortBreakTime(parseInt(storedShortBreakTime));
+  //   }
 
-  useEffect(() => {
-    const storedPomodoroTime = localStorage.getItem("pomodoro");
-    if (storedPomodoroTime) {
-      setPomodoroTime(parseInt(storedPomodoroTime));
-    }
-    const storedShortBreakTime = localStorage.getItem("shortBreak");
-
-    if (storedShortBreakTime) {
-      setShortBreakTime(parseInt(storedShortBreakTime));
-    }
-
-    const storedLongBreakTime = localStorage.getItem("longBreak");
-    if (storedLongBreakTime) {
-      setLongBreakTime(parseInt(storedLongBreakTime));
-    }
-  }, []);
+  //   const storedLongBreakTime = localStorage.getItem("longBreak");
+  //   if (storedLongBreakTime) {
+  //     setLongBreakTime(parseInt(storedLongBreakTime));
+  //   }
+  // }, []);
 
   useEffect(() => {
     // Exit early when we reach 0
@@ -151,6 +146,24 @@ export const TimerContextProvider = ({ children }) => {
       localStorage.setItem("isActive", isActive);
     }
   }, [isActive]);
+
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem("pomodoroTime", pomodoroTime);
+    }
+  }, [pomodoroTime]);
+
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem("shortBreakTime", shortBreakTime);
+    }
+  }, [shortBreakTime]);
+
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem("longBreakTime", longBreakTime);
+    }
+  }, [longBreakTime]);
 
   useEffect(() => {
     {
@@ -251,13 +264,6 @@ export const TimerContextProvider = ({ children }) => {
     setIsBreak(!isBreak);
     setIsDisabled(true);
   };
-  //   if (isLongBreak.state) {
-  //     content = "Take a long break";
-  //   } else if (isBreak) {
-  //     content = "Take a short break";
-  //   } else {
-  //     content = "Pomodoro";
-  //   }
 
   const toggle = () => {
     setIsActive(!isActive);

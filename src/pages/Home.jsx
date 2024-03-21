@@ -13,7 +13,7 @@ const Home = () => {
   const { isPomodoro, alignment } = useContext(TimerContext);
   const [task, setTask] = useState("");
   const token = localStorage.getItem("access_token");
-  const { saveSettings, getSettings, getModes, loading } = useGetSettings();
+  const { saveSettings, getModes, loading } = useGetSettings();
 
   useEffect(() => {
     if (user && !loading) {
@@ -23,9 +23,9 @@ const Home = () => {
 
   // useEffect(() => {
   //   if (user) {
-  //     getSettings();
+  //     getModes();
   //   }
-  // }, []);
+  // }, [user]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();

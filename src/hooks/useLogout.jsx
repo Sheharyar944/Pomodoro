@@ -28,6 +28,9 @@ const useLogout = () => {
     localStorage.removeItem("isDisabled");
     localStorage.removeItem("isActive");
     localStorage.removeItem("mode");
+    localStorage.removeItem("pomodoroTime");
+    localStorage.removeItem("shortBreakTime");
+    localStorage.removeItem("longBreakTime");
   };
 
   return logout;
