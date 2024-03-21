@@ -11,9 +11,9 @@ const useLogout = () => {
     localStorage.removeItem("username");
     localStorage.removeItem("id");
     localStorage.removeItem("email");
-    localStorage.removeItem("pomodoroTime");
-    localStorage.removeItem("shortBreakTime");
-    localStorage.removeItem("longBreakTime");
+    localStorage.removeItem("pomodoro");
+    localStorage.removeItem("shortBreak");
+    localStorage.removeItem("longBreak");
     localStorage.removeItem("long_break_delay");
     localStorage.removeItem("isPomodoro");
     localStorage.removeItem("count");
@@ -27,6 +27,7 @@ const useLogout = () => {
     localStorage.removeItem("initialLongBreak");
     localStorage.removeItem("isDisabled");
     localStorage.removeItem("isActive");
+    localStorage.removeItem("mode");
   };
 
   return logout;

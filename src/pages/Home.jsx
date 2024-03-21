@@ -10,22 +10,22 @@ import { TimerContext } from "../components/TimerContext.jsx";
 
 const Home = () => {
   const { user, userDetails } = useContext(AuthContext);
-  const { isPomodoro } = useContext(TimerContext);
+  const { isPomodoro, alignment } = useContext(TimerContext);
   const [task, setTask] = useState("");
   const token = localStorage.getItem("access_token");
   const { saveSettings, getSettings, getModes, loading } = useGetSettings();
 
   useEffect(() => {
     if (user && !loading) {
-      saveSettings();
+      saveSettings(alignment);
     }
   }, [isPomodoro]);
 
-  useEffect(() => {
-    if (user) {
-      getSettings();
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (user) {
+  //     getSettings();
+  //   }
+  // }, []);
 
   const handleSubmit = async (event) => {
     event.preventDefault();

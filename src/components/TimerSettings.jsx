@@ -1,11 +1,13 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useRef, useContext, useEffect, useState } from "react";
 import Box from "@mui/material/Box";
-import { TextField } from "@mui/material";
+import { Button, CircularProgress, TextField } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import MyToggle from "./MyToggle";
 import MyToggleButton from "./MyToggleButton";
 import { TimerContext } from "./TimerContext";
 import useGetSettings from "../hooks/useGetSettings";
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 
 const TimerSettings = ({ handleClose }) => {
   const {
@@ -26,18 +28,82 @@ const TimerSettings = ({ handleClose }) => {
     setInitialLongBreak,
     dailyGoal,
     setDailyGoal,
+    alignment,
+    setAlignment,
   } = useContext(TimerContext);
-  const [isClassicChecked, setIsClassicChecked] = useState(false);
-  const { getModes } = useGetSettings();
+
+  const {
+    saveSettings,
+    selectedMode,
+    modes,
+    loading: modesLoading,
+  } = useGetSettings();
+  const mode = localStorage.getItem("mode");
+  const inputRef = useRef(null);
+  const [prevPomodoro, setPrevPomodoro] = useState(pomodoro);
+  const [prevShortBreak, setPrevShortBreak] = useState(shortBreak);
+  const [prevLongBreak, setPrevLongBreak] = useState(longBreak);
+  const [prevLongBreakDelay, setPrevLongBreakDelay] = useState(longBreakDelay);
+  const [prevMode, setPrevMode] = useState(alignment);
+  const [isInputFocused, setIsInputFocused] = useState(false);
 
   useEffect(() => {
-    if (isClassicChecked) {
-      setPomodoro(25 * 60);
-      setShortBreak(5 * 60);
-      setLongBreak(15 * 60);
-      setLongBreakDelay(4);
+    setPrevPomodoro(pomodoro);
+  }, [pomodoro]);
+
+  useEffect(() => {
+    setPrevShortBreak(shortBreak);
+  }, [shortBreak]);
+
+  useEffect(() => {
+    setPrevLongBreak(longBreak);
+  }, [longBreak]);
+
+  useEffect(() => {
+    setPrevLongBreakDelay(longBreakDelay);
+  }, [longBreakDelay]);
+
+  useEffect(() => {
+    setPrevMode(alignment);
+  }, [alignment]);
+
+  useEffect(() => {
+    if (mode) {
+      setAlignment(mode);
+    } else {
+      setAlignment(selectedMode?.settings_name);
     }
-  }, [isClassicChecked]);
+  }, [selectedMode]);
+
+  useEffect(() => {
+    if (!modesLoading) {
+      saveSettings(
+        alignment,
+        prevMode,
+        prevPomodoro,
+        prevShortBreak,
+        prevLongBreak,
+        prevLongBreakDelay
+      );
+    }
+  }, [alignment]);
+
+  const handleChange = (event, newAlignment) => {
+    if (newAlignment !== null) {
+      setAlignment(newAlignment);
+      localStorage.setItem("mode", newAlignment);
+      const currentMode =
+        modes &&
+        modes.find((mode) => {
+          return mode.settings_name == newAlignment;
+        });
+
+      setPomodoro(currentMode?.pomodoro_duration);
+      setShortBreak(currentMode?.short_break_duration);
+      setLongBreak(currentMode?.long_break_duration);
+      setLongBreakDelay(currentMode?.long_break_delay);
+    }
+  };
 
   const handlePomodoroChange = (e) => {
     setPomodoro(e.target.value * 60);
@@ -66,24 +132,69 @@ const TimerSettings = ({ handleClose }) => {
     setIsAutoBreakChecked(event.target.checked);
   };
 
-  const handleSchemeClassic = (event) => {
-    setIsClassicChecked(!isClassicChecked);
-    setInitialPomodoro(25 * 60);
-    setInitialShortBreak(5 * 60);
-    setInitialLongBreak(15 * 60);
-    setLongBreakDelay(4);
+  // console.log(isInputFocused);
+  // useEffect(() => {
+  //   console.log("isInputFocused", isInputFocused);
+  //   if (!modesLoading && !isInputFocused) {
+  //     saveSettings(alignment);
+  //   }
+  //   const handleClickOutside = (event) => {
+  //     console.log("handleClickOutside is called");
+  //     if (inputRef.current && !inputRef.current.contains(event.target)) {
+  //       setIsInputFocused(false);
+  //     }
+  //   };
+  //   document.body.addEventListener("click", handleClickOutside);
+  //   return () => {
+  //     document.body.removeEventListener("click", handleClickOutside);
+  //   };
+  // }, [isInputFocused]);
+
+  const Modes = () => (
+    <Box>
+      <ToggleButtonGroup
+        color="primary"
+        value={alignment}
+        exclusive
+        onChange={handleChange}
+        aria-label="Platform"
+      >
+        {Array.isArray(modes) &&
+          modes.map((mode) => (
+            <ToggleButton
+              // onClick={handleButtonClick}
+              onMouseDown={handleButtonMouseDown}
+              // onMouseUp={handleButtonClick}
+              value={mode.settings_name}
+              key={mode.id}
+            >
+              {mode.settings_name} - {mode.pomodoro_duration / 60}{" "}
+              {mode.short_break_duration / 60} {mode.long_break_duration / 60}{" "}
+              {mode.long_break_delay}
+            </ToggleButton>
+          ))}
+      </ToggleButtonGroup>
+    </Box>
+  );
+
+  const handleButtonMouseDown = (e) => {
+    if (isInputFocused) {
+      e.preventDefault(); // Prevent button from losing focus
+    }
   };
 
+  useEffect(() => {
+    if (!modesLoading && !isInputFocused) {
+      saveSettings(alignment);
+    }
+  }, [isInputFocused]);
+
   return (
-    <div>
-      <Box>
-        <MyToggleButton
-          selected={isClassicChecked}
-          onChange={handleSchemeClassic}
-        >
-          classic - 25 5 15 4
-        </MyToggleButton>
+    <Box>
+      <Box display="flex" justifyContent="center" width="100%" p={2}>
+        {modesLoading ? <CircularProgress /> : <Modes />}
       </Box>
+
       <Box
         sx={{
           display: "flex",
@@ -120,7 +231,12 @@ const TimerSettings = ({ handleClose }) => {
               id="outlined-basic"
               value={pomodoro / 60}
               onChange={handlePomodoroChange}
-              onBlur={handleClose}
+              onFocus={() => {
+                setIsInputFocused(true);
+              }}
+              onBlur={() => {
+                setIsInputFocused(false);
+              }}
               variant="outlined"
               fullWidth={true}
               sx={{
@@ -181,7 +297,12 @@ const TimerSettings = ({ handleClose }) => {
               id="outlined-basic"
               value={shortBreak / 60}
               onChange={handleShortBreakTimeChange}
-              onBlur={handleClose}
+              onFocus={() => {
+                setIsInputFocused(true);
+              }}
+              onBlur={() => {
+                setIsInputFocused(false);
+              }}
               variant="outlined"
               fullWidth={true}
               sx={{
@@ -240,7 +361,12 @@ const TimerSettings = ({ handleClose }) => {
               id="outlined-basic"
               value={longBreak / 60}
               onChange={handleLongBreakTimeChange}
-              onBlur={handleClose}
+              onFocus={() => {
+                setIsInputFocused(true);
+              }}
+              onBlur={() => {
+                setIsInputFocused(false);
+              }}
               variant="outlined"
               fullWidth={true}
               sx={{
@@ -299,7 +425,12 @@ const TimerSettings = ({ handleClose }) => {
               id="outlined-basic"
               value={longBreakDelay}
               onChange={handleLongBreakDelayChange}
-              onBlur={handleClose}
+              onFocus={() => {
+                setIsInputFocused(true);
+              }}
+              onBlur={() => {
+                setIsInputFocused(false);
+              }}
               variant="outlined"
               fullWidth={true}
               sx={{
@@ -426,7 +557,7 @@ const TimerSettings = ({ handleClose }) => {
           />
         </Box>
       </Box>
-    </div>
+    </Box>
   );
 };
 

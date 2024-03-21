@@ -88,6 +88,7 @@ const SettingsModal = () => {
     playAlarmSound,
     setPlayAlarmSound,
     queueUpdate,
+    alignment,
   } = useContext(TimerContext);
 
   const [open, setOpen] = React.useState(false);
@@ -124,8 +125,9 @@ const SettingsModal = () => {
 
     setOpen(false);
     if (user) {
+      console.log("alignment?", alignment);
       setTimeout(() => {
-        saveSettings();
+        saveSettings(alignment);
       }, 0);
     }
   };

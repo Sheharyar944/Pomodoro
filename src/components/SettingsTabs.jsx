@@ -62,6 +62,7 @@ const SettingsTabs = () => {
     playAlarmSound,
     setPlayAlarmSound,
     queueUpdate,
+    alignment,
   } = useContext(TimerContext);
   const [open, setOpen] = React.useState(false);
   const [longBreakDelayValue, setLongBreakDelayValue] = useState(0);
@@ -114,7 +115,7 @@ const SettingsTabs = () => {
 
     if (user) {
       setTimeout(() => {
-        saveSettings();
+        saveSettings(alignment);
       }, 0);
     }
   };

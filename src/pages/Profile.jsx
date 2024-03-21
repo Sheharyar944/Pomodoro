@@ -13,6 +13,7 @@ const Profile = () => {
   if (error) {
     return `Error ${error.message}`;
   }
+  console.log(tasks);
 
   return (
     <Box>

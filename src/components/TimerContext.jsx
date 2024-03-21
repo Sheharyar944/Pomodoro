@@ -52,21 +52,24 @@ export const TimerContextProvider = ({ children }) => {
   const [updateShortBreakQueue, setUpdateShortBreakQueue] = useState([]);
   const [updateLongBreakQueue, setUpdateLongBreakQueue] = useState([]);
   const [playAlarmSound, setPlayAlarmSound] = useState(true);
+  const [alignment, setAlignment] = React.useState("classic");
+
   // const { saveSettings } = useGetSettings();
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   useEffect(() => {
-    const storedPomodoroTime = localStorage.getItem("pomodoroTime");
+    const storedPomodoroTime = localStorage.getItem("pomodoro");
     if (storedPomodoroTime) {
       setPomodoroTime(parseInt(storedPomodoroTime));
     }
-    const storedShortBreakTime = localStorage.getItem("shortBreakTime");
+    const storedShortBreakTime = localStorage.getItem("shortBreak");
 
     if (storedShortBreakTime) {
       setShortBreakTime(parseInt(storedShortBreakTime));
     }
-    const storedLongBreakTime = localStorage.getItem("longBreakTime");
+
+    const storedLongBreakTime = localStorage.getItem("longBreak");
     if (storedLongBreakTime) {
       setLongBreakTime(parseInt(storedLongBreakTime));
     }
@@ -151,24 +154,24 @@ export const TimerContextProvider = ({ children }) => {
 
   useEffect(() => {
     {
-      localStorage.setItem("pomodoroTime", pomodoroTime);
+      localStorage.setItem("pomodoro", pomodoro);
       localStorage.setItem("isDisabled", isDisabled);
     }
-  }, [pomodoroTime, isDisabled]);
+  }, [pomodoro, isDisabled]);
 
   useEffect(() => {
     {
-      localStorage.setItem("shortBreakTime", shortBreakTime);
+      localStorage.setItem("shortBreak", shortBreak);
       localStorage.setItem("isDisabled", isDisabled);
     }
-  }, [shortBreakTime, isDisabled]);
+  }, [shortBreak, isDisabled]);
 
   useEffect(() => {
     {
-      localStorage.setItem("longBreakTime", longBreakTime);
+      localStorage.setItem("longBreak", longBreak);
       localStorage.setItem("isDisabled", isDisabled);
     }
-  }, [longBreakTime, isDisabled]);
+  }, [longBreak, isDisabled]);
 
   useEffect(() => {
     {
@@ -386,6 +389,8 @@ export const TimerContextProvider = ({ children }) => {
         setUpdateLongBreakQueue,
         playAlarmSound,
         setPlayAlarmSound,
+        alignment,
+        setAlignment,
 
         queueUpdate,
         autoPomodoro,
