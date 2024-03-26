@@ -1,14 +1,16 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
-import soundUrl from "../assets/sounds/bell1.wav";
+import soundUrlBell from "../assets/sounds/bell1.wav";
+import soundURlClock from "../assets/sounds/clock.wav";
+import soundUrlJohn from "../assets/sounds/john.mp3";
 import { AuthContext } from "./AuthContext";
 
 export const TimerContext = createContext();
 
 export const TimerContextProvider = ({ children }) => {
   const { user } = useContext(AuthContext);
-  const [pomodoroTime, setPomodoroTime] = useState(50);
-  const [shortBreakTime, setShortBreakTime] = useState(30);
-  const [longBreakTime, setLongBreakTime] = useState(50);
+  const [pomodoroTime, setPomodoroTime] = useState(25 * 60);
+  const [shortBreakTime, setShortBreakTime] = useState(5 * 60);
+  const [longBreakTime, setLongBreakTime] = useState(15 * 60);
   const [isActive, setIsActive] = useState(
     localStorage.getItem("isActive") === "true"
   );
@@ -50,25 +52,27 @@ export const TimerContextProvider = ({ children }) => {
   const [updateQueue, setUpdateQueue] = useState([]);
   const [updateShortBreakQueue, setUpdateShortBreakQueue] = useState([]);
   const [updateLongBreakQueue, setUpdateLongBreakQueue] = useState([]);
-  const [playAlarmSound, setPlayAlarmSound] = useState(true);
-  const [alignment, setAlignment] = React.useState("classic");
-
-  // useEffect(() => {
-  //   const storedPomodoroTime = localStorage.getItem("pomodoro");
-  //   if (storedPomodoroTime) {
-  //     setPomodoroTime(parseInt(storedPomodoroTime));
-  //   }
-  //   const storedShortBreakTime = localStorage.getItem("shortBreak");
-
-  //   if (storedShortBreakTime) {
-  //     setShortBreakTime(parseInt(storedShortBreakTime));
-  //   }
-
-  //   const storedLongBreakTime = localStorage.getItem("longBreak");
-  //   if (storedLongBreakTime) {
-  //     setLongBreakTime(parseInt(storedLongBreakTime));
-  //   }
-  // }, []);
+  const [playAlarmSound, setPlayAlarmSound] = useState(
+    localStorage.getItem("playAlarmSound") === "true" ||
+      localStorage.getItem("playAlarmSound") === null
+  );
+  const [playClockSound, setPlayClockSound] = useState(
+    localStorage.getItem("playClockSound") === "true"
+  );
+  const [playClockDuringBreak, setPlayClockDuringBreak] = useState(
+    localStorage.getItem("PlayClockDuringBreak") === "true"
+  );
+  const [notify, setNotify] = useState(
+    localStorage.getItem("notify") === "true"
+  );
+  const [playSound, setPlaySound] = useState(
+    localStorage.getItem("playSound") === "true"
+  );
+  const [alignment, setAlignment] = React.useState(
+    localStorage.getItem("mode") || "classic"
+  );
+  const [isInputFocused, setIsInputFocused] = useState(false);
+  const [isFieldChanged, setIsFieldChanged] = useState(false);
 
   useEffect(() => {
     // Exit early when we reach 0
@@ -79,6 +83,9 @@ export const TimerContextProvider = ({ children }) => {
         console.log("pomodoroTime", pomodoroTime);
         intervalId = setInterval(() => {
           setPomodoroTime((prevTime) => {
+            if (prevTime > 60 && prevTime < 62 && notify) {
+              playJohn();
+            }
             if (prevTime > 1) {
               return prevTime - 1;
             } else {
@@ -97,6 +104,9 @@ export const TimerContextProvider = ({ children }) => {
       } else if (isLongBreak.state) {
         intervalId = setInterval(() => {
           setLongBreakTime((prevTime) => {
+            if (prevTime > 60 && prevTime < 62 && notify) {
+              playJohn();
+            }
             if (prevTime > 1) {
               return prevTime - 1;
             } else {
@@ -115,6 +125,9 @@ export const TimerContextProvider = ({ children }) => {
       } else {
         intervalId = setInterval(() => {
           setShortBreakTime((prevTime) => {
+            if (prevTime > 60 && prevTime < 62 && notify) {
+              playJohn();
+            }
             if (prevTime > 1) {
               return prevTime - 1;
             } else {
@@ -146,6 +159,12 @@ export const TimerContextProvider = ({ children }) => {
       localStorage.setItem("isActive", isActive);
     }
   }, [isActive]);
+
+  useEffect(() => {
+    {
+      localStorage.setItem("playSound", playSound);
+    }
+  }, [playSound]);
 
   useEffect(() => {
     if (user) {
@@ -268,12 +287,29 @@ export const TimerContextProvider = ({ children }) => {
   const toggle = () => {
     setIsActive(!isActive);
     setIsDisabled(false);
+    setPlaySound(!playSound);
   };
+
+  useEffect(() => {
+    console.log("I am working");
+    let audio = new Audio(soundURlClock);
+    audio.loop = true;
+    if (playSound && playClockSound && (isPomodoro || playClockDuringBreak)) {
+      audio.play();
+    } else {
+      audio.pause();
+    }
+
+    return () => {
+      audio.pause();
+    };
+  }, [playSound, playClockSound, playClockDuringBreak]);
 
   const reset = () => {
     setPomodoroTime(initialPomodoro);
     setIsDisabled(true);
     setIsActive(false);
+    setPlaySound(false);
   };
 
   const longBreakCount = () => {
@@ -303,12 +339,16 @@ export const TimerContextProvider = ({ children }) => {
     setLongBreakTime(initialLongBreak);
     setShortBreakTime(initialShortBreak);
     autoOffPomodoro();
+    setPlaySound(false);
   };
 
   const forward = () => {
     setIsPomodoro(!isPomodoro);
     setIsBreak(!isBreak);
     longBreakCount();
+    setPomodoroTime(initialPomodoro);
+    setLongBreakTime(initialLongBreak);
+    setShortBreakTime(initialShortBreak);
   };
 
   const add = () => {
@@ -328,8 +368,13 @@ export const TimerContextProvider = ({ children }) => {
   };
 
   const playBell = () => {
-    const bell = new Audio(soundUrl);
+    const bell = new Audio(soundUrlBell);
     bell.play();
+  };
+
+  const playJohn = () => {
+    const john = new Audio(soundUrlJohn);
+    john.play();
   };
 
   const formatTime = (pomodoroTime, shortBreakTime, longBreakTime) => {
@@ -395,8 +440,19 @@ export const TimerContextProvider = ({ children }) => {
         setUpdateLongBreakQueue,
         playAlarmSound,
         setPlayAlarmSound,
+        playClockSound,
+        setPlayClockSound,
+        playClockDuringBreak,
+        setPlayClockDuringBreak,
+        notify,
+        setNotify,
+        setAlignment,
         alignment,
         setAlignment,
+        isInputFocused,
+        setIsInputFocused,
+        isFieldChanged,
+        setIsFieldChanged,
 
         queueUpdate,
         autoPomodoro,

@@ -38,8 +38,8 @@ const Timer = () => {
   } else {
     content = "Pomodoro";
   }
-
   const handleClick = () => {
+    // console.log("alignment:", alignment);
     toggle();
     saveSettings(alignment);
   };

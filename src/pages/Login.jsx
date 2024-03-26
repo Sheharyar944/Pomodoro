@@ -51,7 +51,7 @@ const Login = () => {
       const response = await loginUser(email, password);
       const res = await getModes(response.data.user.id);
       const selectedMode = res.data.find((mode) => mode.is_selected);
-      if (selectedMode.is_pomodoro) {
+      if (selectedMode.is_pomodoro && !selectedMode.is_disabled) {
         setPomodoroTime(selectedMode.current_time);
       } else {
         setPomodoroTime(selectedMode.pomodoro_duration);

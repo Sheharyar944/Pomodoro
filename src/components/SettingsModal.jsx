@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
-import { Divider, IconButton, TextField, ToggleButton } from "@mui/material";
+import { Slide, IconButton } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
 import WatchLaterIcon from "@mui/icons-material/WatchLater";
 import NotificationsIcon from "@mui/icons-material/Notifications";
@@ -15,8 +15,9 @@ import ToolTip from "./ToolTip";
 import TimerSettings from "./TimerSettings";
 import NotificationSettings from "./NotificationSettings";
 import useGetSettings from "../hooks/useGetSettings";
-import { AuthContext } from "./AuthContext";
 import { TimerContext } from "./TimerContext";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -88,13 +89,50 @@ const SettingsModal = () => {
     playAlarmSound,
     setPlayAlarmSound,
     queueUpdate,
-    alignment,
+    isInputFocused,
+    isFieldChanged,
+    setIsFieldChanged,
   } = useContext(TimerContext);
 
+  const [value, setValue] = React.useState(0);
   const [open, setOpen] = React.useState(false);
-  // const [dailyGoalValue, setDailyGoalValue] = useState(1);
-  const { saveSettings } = useGetSettings();
-  const { user } = useContext(AuthContext);
+  const { loading: modesLoading } = useGetSettings();
+  // const { user } = useContext(AuthContext);
+  const [snackPack, setSnackPack] = useState([]);
+  const [openSnack, setOpenSnack] = useState(false);
+  const [messageInfo, setMessageInfo] = useState(undefined);
+
+  useEffect(() => {
+    if (snackPack.length && !messageInfo) {
+      setMessageInfo({ ...snackPack[0] });
+      setSnackPack((prev) => prev.slice(1));
+      setOpenSnack(true);
+      setIsFieldChanged(false);
+    } else if (snackPack.length && messageInfo && openSnack) {
+      setOpenSnack(false);
+    }
+  }, [snackPack, messageInfo, openSnack]);
+
+  useEffect(() => {
+    if (!isInputFocused && isFieldChanged && !modesLoading) {
+      handleClick("Settings successfully changed");
+    }
+  }, [isInputFocused]);
+
+  const handleClick = (message) => {
+    setSnackPack((prev) => [...prev, { message, key: new Date().getTime() }]);
+  };
+
+  const handleSnackClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnack(false);
+  };
+
+  const handleExited = () => {
+    setMessageInfo(undefined);
+  };
 
   useEffect(() => {
     setPomodoro(initialPomodoro);
@@ -102,10 +140,11 @@ const SettingsModal = () => {
     setLongBreak(initialLongBreak);
   }, []);
 
-  const handleOpen = () => setOpen(true);
+  const handleOpen = () => {
+    setOpen(true);
+  };
   const handleClose = () => {
     queueUpdate(parseInt(pomodoro), parseInt(shortBreak), parseInt(longBreak));
-
     if (!isActive && isDisabled) {
       setPomodoroTime(pomodoro);
       setShortBreakTime(shortBreak);
@@ -124,15 +163,7 @@ const SettingsModal = () => {
     setInitialShortBreak(shortBreak);
 
     setOpen(false);
-    if (user) {
-      console.log("alignment?", alignment);
-      setTimeout(() => {
-        saveSettings(alignment);
-      }, 0);
-    }
   };
-
-  const [value, setValue] = React.useState(0);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -140,6 +171,24 @@ const SettingsModal = () => {
 
   return (
     <div>
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        open={openSnack}
+        autoHideDuration={4000}
+        onClose={handleSnackClose}
+        TransitionProps={{ onExited: handleExited, direction: "left" }}
+        TransitionComponent={Slide}
+      >
+        <Alert
+          onClose={handleSnackClose}
+          severity="success"
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {messageInfo ? messageInfo.message : undefined}
+        </Alert>
+      </Snackbar>
+
       <ToolTip title={"settings"} placement={"right-start"}>
         <IconButton
           onClick={handleOpen}
@@ -209,14 +258,14 @@ const SettingsModal = () => {
               </Tabs>
             </Box>
             <CustomTabPanel value={value} index={0}>
-              <TimerSettings />
+              <TimerSettings
+                handleClose={handleClose}
+                handleClick={handleClick}
+              />
             </CustomTabPanel>
 
             <CustomTabPanel value={value} index={1}>
-              <NotificationSettings
-                playAlarmSound={playAlarmSound}
-                setPlayAlarmSound={setPlayAlarmSound}
-              />
+              <NotificationSettings handleClick={handleClick} />
             </CustomTabPanel>
 
             <CustomTabPanel value={value} index={2}>

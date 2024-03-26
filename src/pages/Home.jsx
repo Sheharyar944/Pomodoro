@@ -13,19 +13,13 @@ const Home = () => {
   const { isPomodoro, alignment } = useContext(TimerContext);
   const [task, setTask] = useState("");
   const token = localStorage.getItem("access_token");
-  const { saveSettings, getModes, loading } = useGetSettings();
+  const { saveSettings, loading } = useGetSettings();
 
   useEffect(() => {
     if (user && !loading) {
       saveSettings(alignment);
     }
   }, [isPomodoro]);
-
-  // useEffect(() => {
-  //   if (user) {
-  //     getModes();
-  //   }
-  // }, [user]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -96,14 +90,6 @@ const Home = () => {
           <Button type="submit">Click</Button>
         </form>
       </Box>
-      <Button
-        onClick={() => {
-          getModes();
-        }}
-      >
-        {" "}
-        get modes
-      </Button>
     </Box>
   );
 };

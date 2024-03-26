@@ -41,6 +41,14 @@ const useGetSettings = () => {
     setDailyGoal,
     setIsDisabled,
     isDisabled,
+    playAlarmSound,
+    setPlayAlarmSound,
+    playClockSound,
+    setPlayClockSound,
+    playClockDuringBreak,
+    setPlayClockDuringBreak,
+    notify,
+    setNotify,
   } = useContext(TimerContext);
 
   const saveSettings = async (
@@ -49,7 +57,8 @@ const useGetSettings = () => {
     prevPomodoro = pomodoro,
     prevShortBreak = shortBreak,
     prevLongBreak = longBreak,
-    prevLongBreakDelay = longBreakDelay
+    prevLongBreakDelay = longBreakDelay,
+    prevDailyGoal = dailyGoal
   ) => {
     const currentTime = () => {
       if (isPomodoro) return pomodoroTime;
@@ -69,12 +78,16 @@ const useGetSettings = () => {
           pomodoro_count: isLongBreak.count,
           is_long_break: isLongBreak.state,
           is_break: isBreak,
-          daily_goal: dailyGoal,
+          daily_goal: prevDailyGoal,
           auto_start_pomodoro: isAutoPomodoroChecked,
           auto_start_break: isAutoBreakChecked,
           is_selected: selected,
           current_time: currentTime(),
           is_disabled: isDisabled,
+          alarm_sound: playAlarmSound,
+          ticking_sound: playClockSound,
+          ticking_sound_break: playClockDuringBreak,
+          one_min_notify: notify,
         }
       );
       setModes((prevModes) => {
@@ -92,69 +105,19 @@ const useGetSettings = () => {
     } catch (error) {
       console.log("error updating settings", error);
     }
+  };
 
+  const saveSelectedMode = async (alignment) => {
     try {
-      const response2 = await axios.post(
+      const response = await axios.post(
         `http://127.0.0.1:8000/pomodoro/${userDetails.id}/?settings_name=${alignment}`,
         {
           is_selected: true,
         }
       );
-      console.log("SaveSettings2 invoked", response2);
+      console.log("Save selected mode invoked", response);
     } catch (error) {
-      console.log("error updating settings2", error);
-    }
-  };
-
-  const getSettings = async () => {
-    try {
-      //   setLoading(true);
-      const response = await axios.get(
-        `http://127.0.0.1:8000/pomodoro/${userDetails.id}/?settings_name=classic`
-      );
-
-      localStorage.setItem("pomodoro", response.data.pomodoro_duration);
-      localStorage.setItem("shortBreak", response.data.short_break_duration);
-      localStorage.setItem("longBreak", response.data.long_break_duration);
-      localStorage.setItem("long_break_delay", response.data.long_break_delay);
-      localStorage.setItem("isPomodoro", response.data.is_pomodoro);
-      localStorage.setItem("count", response.data.pomodoro_count);
-      localStorage.setItem("isLongBreak", response.data.is_long_break);
-      localStorage.setItem("isBreak", response.data.is_break);
-      localStorage.setItem("daily_goal", response.data.daily_goal);
-      localStorage.setItem(
-        "auto_start_pomodoro",
-        response.data.auto_start_pomodoro
-      );
-      localStorage.setItem("auto_start_break", response.data.auto_start_break);
-
-      //   setPomodoroTime(response.data.pomodoro_duration);
-      //   setShortBreakTime(response.data.short_break_duration);
-      //   setLongBreakTime(response.data.long_break_duration);
-      setInitialPomodoro(response.data.pomodoro_duration);
-      setInitialShortBreak(response.data.short_break_duration);
-      setInitialLongBreak(response.data.long_break_duration);
-      setPomodoro(response.data.pomodoro_duration);
-      setShortBreak(response.data.short_break_duration);
-      setLongBreak(response.data.long_break_duration);
-      setIsBreak(response.data.is_break);
-      setIsPomodoro(response.data.is_pomodoro);
-      setLongBreakDelay(response.data.long_break_delay);
-      setIsLongBreak((prevState) => ({
-        ...prevState,
-        count: response.data.pomodoro_count,
-        state: response.data.is_long_break,
-      }));
-      setDailyGoal(response.data.daily_goal);
-      setIsAutoBreakChecked(response.data.auto_start_break);
-      setIsAutoPomodoroChecked(response.data.auto_start_pomodoro);
-
-      console.log("Response of getting settings", response.data);
-      return response;
-    } catch (error) {
-      console.log("error updating settings", error);
-    } finally {
-      setLoading(false);
+      console.log("error updating mode", error);
     }
   };
 
@@ -190,6 +153,14 @@ const useGetSettings = () => {
       );
       localStorage.setItem("auto_start_break", selectedMode.auto_start_break);
       localStorage.setItem("isDisabled", selectedMode.is_disabled);
+      localStorage.setItem("playAlarmSound", selectedMode.alarm_sound);
+      localStorage.setItem("playClockSound", selectedMode.ticking_sound);
+      localStorage.setItem(
+        "playClockDuringBreak",
+        selectedMode.ticking_sound_break
+      );
+      localStorage.setItem("notify", selectedMode.one_min_notify);
+
       if (pomodoroTime) {
         setPomodoroTime(pomodoroTime);
       }
@@ -221,6 +192,10 @@ const useGetSettings = () => {
       setIsAutoBreakChecked(selectedMode.auto_start_break);
       setIsAutoPomodoroChecked(selectedMode.auto_start_pomodoro);
       setIsDisabled(selectedMode.is_disabled);
+      setPlayAlarmSound(selectedMode.alarm_sound);
+      setPlayClockSound(selectedMode.ticking_sound);
+      setPlayClockDuringBreak(selectedMode.ticking_sound_break);
+      setNotify(selectedMode.one_min_notify);
 
       return response;
     } catch (error) {
@@ -238,7 +213,8 @@ const useGetSettings = () => {
 
   return {
     saveSettings,
-    getSettings,
+    saveSelectedMode,
+    // getSettings,
     getModes,
     modes,
     selectedMode,

@@ -1,11 +1,46 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import { Box, Button, IconButton, Typography } from "@mui/material";
 import MyToggle from "./MyToggle";
+import { TimerContext } from "./TimerContext";
+import useGetSettings from "../hooks/useGetSettings";
 
-const NotificationSettings = ({ playAlarmSound, setPlayAlarmSound }) => {
+const NotificationSettings = ({ handleClick }) => {
+  const {
+    playAlarmSound,
+    setPlayAlarmSound,
+    playClockSound,
+    setPlayClockSound,
+    playClockDuringBreak,
+    setPlayClockDuringBreak,
+    notify,
+    setNotify,
+    alignment,
+  } = useContext(TimerContext);
+  const { saveSettings, loading } = useGetSettings();
   const handlePlayAlarmSound = (e) => {
     setPlayAlarmSound(e.target.checked);
+    handleClick("Settings. Changes saved");
   };
+  const handlePlayClockSound = (e) => {
+    setPlayClockSound(e.target.checked);
+    handleClick("Settings. Changes saved");
+  };
+  const handlePlayClockDuringBreak = (e) => {
+    setPlayClockDuringBreak(e.target.checked);
+    handleClick("Settings. Changes saved");
+  };
+
+  const handleNotify = (e) => {
+    setNotify(e.target.checked);
+    handleClick("Settings. Changes saved");
+  };
+
+  useEffect(() => {
+    if (!loading) {
+      saveSettings(alignment);
+    }
+  }, [playAlarmSound, playClockSound, playClockDuringBreak, notify]);
+
   return (
     <div>
       <Box
@@ -45,7 +80,11 @@ const NotificationSettings = ({ playAlarmSound, setPlayAlarmSound }) => {
           </Typography>
         </Box>
         <Box sx={{ flex: 1, width: "400px" }}>
-          <MyToggle label={""} isChecked={true} handleChange={() => true} />
+          <MyToggle
+            label={""}
+            isChecked={playClockSound}
+            handleChange={handlePlayClockSound}
+          />
         </Box>
       </Box>
       <Box
@@ -63,7 +102,11 @@ const NotificationSettings = ({ playAlarmSound, setPlayAlarmSound }) => {
           </Typography>
         </Box>
         <Box sx={{ flex: 1, width: "400px" }}>
-          <MyToggle label={""} isChecked={true} handleChange={() => true} />
+          <MyToggle
+            label={""}
+            isChecked={playClockDuringBreak}
+            handleChange={handlePlayClockDuringBreak}
+          />
         </Box>
       </Box>
       <Box
@@ -81,7 +124,7 @@ const NotificationSettings = ({ playAlarmSound, setPlayAlarmSound }) => {
           </Typography>
         </Box>
         <Box sx={{ flex: 1, width: "400px" }}>
-          <MyToggle label={""} isChecked={true} handleChange={() => true} />
+          <MyToggle label={""} isChecked={notify} handleChange={handleNotify} />
         </Box>
       </Box>
     </div>

@@ -8,10 +8,11 @@ import AppSettingsAltIcon from "@mui/icons-material/AppSettingsAlt";
 import TimerSettings from "./TimerSettings";
 import NotificationSettings from "./NotificationSettings";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Box, Button, IconButton, Typography } from "@mui/material";
+import { Box, Slide } from "@mui/material";
 import { TimerContext } from "./TimerContext";
-import { AuthContext } from "./AuthContext";
 import useGetSettings from "../hooks/useGetSettings";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -61,68 +62,85 @@ const SettingsTabs = () => {
     setInitialLongBreak,
     playAlarmSound,
     setPlayAlarmSound,
-    queueUpdate,
-    alignment,
+    isInputFocused,
+    isFieldChanged,
+    setIsFieldChanged,
   } = useContext(TimerContext);
-  const [open, setOpen] = React.useState(false);
-  const [longBreakDelayValue, setLongBreakDelayValue] = useState(0);
 
-  const [dailyGoalValue, setDailyGoalValue] = useState(0);
   const [value, setValue] = React.useState(0);
   const navigate = useNavigate();
   const location = useLocation();
   const { pathname } = location;
-  const { user } = useContext(AuthContext);
-  const { saveSettings } = useGetSettings();
+  const [snackPack, setSnackPack] = useState([]);
+  const [openSnack, setOpenSnack] = useState(false);
+  const [messageInfo, setMessageInfo] = useState(undefined);
+
+  useEffect(() => {
+    if (snackPack.length && !messageInfo) {
+      setMessageInfo({ ...snackPack[0] });
+      setSnackPack((prev) => prev.slice(1));
+      setOpenSnack(true);
+      setIsFieldChanged(false);
+    } else if (snackPack.length && messageInfo && openSnack) {
+      setOpenSnack(false);
+    }
+  }, [snackPack, messageInfo, openSnack]);
+
+  useEffect(() => {
+    if (!isInputFocused && pomodoro && isFieldChanged) {
+      handleClick("Settings successfully changed");
+    }
+  }, [isInputFocused]);
+
+  const handleClick = (message) => {
+    setSnackPack((prev) => [...prev, { message, key: new Date().getTime() }]);
+  };
+
+  const handleSnackClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnack(false);
+  };
+
+  const handleExited = () => {
+    setMessageInfo(undefined);
+  };
 
   useEffect(() => {
     setPomodoro(initialPomodoro);
     setShortBreak(initialShortBreak);
     setLongBreak(initialLongBreak);
-    setLongBreakDelayValue(longBreakDelay);
   }, []);
 
   useEffect(() => {
     settingsMode();
   }, [value, pathname]);
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => {
-    console.log("inputfield has lose focus");
+  // const handleClose = () => {
+  //   console.log("inputfield has lose focus");
+  //   queueUpdate(parseInt(pomodoro), parseInt(shortBreak), parseInt(longBreak));
 
-    queueUpdate(parseInt(pomodoro), parseInt(shortBreak), parseInt(longBreak));
+  //   if (!isActive && isDisabled) {
+  //     setPomodoroTime(pomodoro);
+  //     setShortBreakTime(shortBreak);
+  //     setLongBreakTime(longBreak);
+  //   }
+  //   if (!isPomodoro) {
+  //     setPomodoroTime(pomodoro);
+  //   }
+  //   if (!isBreak) {
+  //     setShortBreakTime(shortBreak);
+  //     setLongBreakTime(longBreak);
+  //   }
 
-    if (!isActive && isDisabled) {
-      setPomodoroTime(pomodoro);
-      setShortBreakTime(shortBreak);
-      setLongBreakTime(longBreak);
-    }
-    if (!isPomodoro) {
-      setPomodoroTime(pomodoro);
-    }
-    if (!isBreak) {
-      setShortBreakTime(shortBreak);
-      setLongBreakTime(longBreak);
-    }
+  //   setInitialPomodoro(pomodoro);
+  //   setInitialLongBreak(longBreak);
+  //   setInitialShortBreak(shortBreak);
 
-    setInitialPomodoro(pomodoro);
-    setInitialLongBreak(longBreak);
-    setInitialShortBreak(shortBreak);
-
-    setLongBreakDelay(longBreakDelayValue);
-    setDailyGoal(dailyGoalValue);
-    setOpen(false);
-
-    if (user) {
-      setTimeout(() => {
-        saveSettings(alignment);
-      }, 0);
-    }
-  };
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
+  //   setLongBreakDelay(longBreakDelayValue);
+  //   setDailyGoal(dailyGoalValue);
+  // };
 
   const settingsMode = () => {
     if (pathname === "/settings/timer") {
@@ -137,57 +155,75 @@ const SettingsTabs = () => {
   };
 
   return (
-    <Box
-      marginTop={10}
-      marginBottom={5}
-      sx={{ width: "80%", margin: "50px auto" }}
-    >
-      <Box>
-        <Box sx={{ borderBottom: 1, borderColor: "divider", padding: "0px" }}>
-          <Tabs
-            sx={{ padding: "0px" }}
-            value={value}
-            //   onChange={handleChange}
-            aria-label="basic tabs example"
-            variant="fullWidth"
-          >
-            <Tab
-              sx={{ padding: "0px 16px" }}
-              icon={<WatchLaterIcon />}
-              label="Timer"
-              onClick={() => navigate("/settings/timer")}
+    <Box>
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        open={openSnack}
+        autoHideDuration={4000}
+        onClose={handleSnackClose}
+        TransitionProps={{ onExited: handleExited, direction: "left" }}
+        TransitionComponent={Slide}
+      >
+        <Alert
+          onClose={handleSnackClose}
+          severity="success"
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {messageInfo ? messageInfo.message : undefined}
+        </Alert>
+      </Snackbar>
+      <Box
+        marginTop={10}
+        marginBottom={5}
+        // border={1}
+        sx={{ width: "80%", margin: "50px auto" }}
+      >
+        <Box>
+          <Box sx={{ borderBottom: 1, borderColor: "divider", padding: "0px" }}>
+            <Tabs
+              sx={{ padding: "0px" }}
+              value={value}
+              aria-label="basic tabs example"
+              variant="fullWidth"
+            >
+              <Tab
+                sx={{ padding: "0px 16px" }}
+                icon={<WatchLaterIcon />}
+                label="Timer"
+                onClick={() => navigate("/settings/timer")}
+              />
+              <Tab
+                sx={{ padding: "0px 16px" }}
+                icon={<NotificationsIcon />}
+                label="Notifications"
+                onClick={() => navigate("/settings/notification")}
+              />
+              <Tab
+                sx={{ padding: "0px 16px" }}
+                icon={<AppSettingsAltIcon />}
+                label="Application"
+                onClick={() => navigate("/settings/application")}
+              />
+            </Tabs>
+          </Box>
+
+          <CustomTabPanel value={value} index={0}>
+            <TimerSettings handleClick={handleClick} />
+          </CustomTabPanel>
+
+          <CustomTabPanel value={value} index={1}>
+            <NotificationSettings
+              playAlarmSound={playAlarmSound}
+              setPlayAlarmSound={setPlayAlarmSound}
             />
-            <Tab
-              sx={{ padding: "0px 16px" }}
-              icon={<NotificationsIcon />}
-              label="Notifications"
-              onClick={() => navigate("/settings/notification")}
-            />
-            <Tab
-              sx={{ padding: "0px 16px" }}
-              icon={<AppSettingsAltIcon />}
-              label="Application"
-              onClick={() => navigate("/settings/application")}
-            />
-          </Tabs>
-        </Box>
+          </CustomTabPanel>
 
-        <CustomTabPanel value={value} index={0}>
-          <TimerSettings handleClose={handleClose} />
-        </CustomTabPanel>
+          <CustomTabPanel value={value} index={2}>
+            Item Three
+          </CustomTabPanel>
 
-        <CustomTabPanel value={value} index={1}>
-          <NotificationSettings
-            playAlarmSound={playAlarmSound}
-            setPlayAlarmSound={setPlayAlarmSound}
-          />
-        </CustomTabPanel>
-
-        <CustomTabPanel value={value} index={2}>
-          Item Three
-        </CustomTabPanel>
-
-        {/* <Box>
+          {/* <Box>
           <Button
             onClick={() => {
               handleClose();
@@ -207,6 +243,7 @@ const SettingsTabs = () => {
             Exit
           </Button>
         </Box> */}
+        </Box>
       </Box>
     </Box>
   );

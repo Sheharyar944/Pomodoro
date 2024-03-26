@@ -31,6 +31,10 @@ const useLogout = () => {
     localStorage.removeItem("pomodoroTime");
     localStorage.removeItem("shortBreakTime");
     localStorage.removeItem("longBreakTime");
+    localStorage.removeItem("playAlarmSound");
+    localStorage.removeItem("playClockSound");
+    localStorage.removeItem("playClockDuringBreak");
+    localStorage.removeItem("notify");
   };
 
   return logout;

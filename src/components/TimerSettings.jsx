@@ -8,45 +8,66 @@ import { TimerContext } from "./TimerContext";
 import useGetSettings from "../hooks/useGetSettings";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 
-const TimerSettings = ({ handleClose }) => {
+const TimerSettings = ({ handleClick }) => {
   const {
+    setPomodoroTime,
+    setShortBreakTime,
+    setLongBreakTime,
+    isActive,
+    isBreak,
+    isPomodoro,
+    isDisabled,
+    pomodoro,
+    shortBreak,
+    setShortBreak,
+    longBreak,
+    setLongBreak,
+    initialPomodoro,
+    setInitialPomodoro,
+    initialShortBreak,
+    setInitialShortBreak,
+    initialLongBreak,
+    setInitialLongBreak,
+    playAlarmSound,
+    setPlayAlarmSound,
+    queueUpdate,
+
     longBreakDelay,
     setLongBreakDelay,
     isAutoPomodoroChecked,
     setIsAutoPomodoroChecked,
     isAutoBreakChecked,
     setIsAutoBreakChecked,
-    pomodoro,
     setPomodoro,
-    shortBreak,
-    setShortBreak,
-    longBreak,
-    setLongBreak,
-    setInitialPomodoro,
-    setInitialShortBreak,
-    setInitialLongBreak,
     dailyGoal,
     setDailyGoal,
     alignment,
     setAlignment,
+    isInputFocused,
+    setIsInputFocused,
+    setIsDisabled,
+    isFieldChanged,
+    setIsFieldChanged,
   } = useContext(TimerContext);
 
   const {
     saveSettings,
+    saveSelectedMode,
     selectedMode,
     modes,
     loading: modesLoading,
   } = useGetSettings();
   const mode = localStorage.getItem("mode");
-  const inputRef = useRef(null);
   const [prevPomodoro, setPrevPomodoro] = useState(pomodoro);
   const [prevShortBreak, setPrevShortBreak] = useState(shortBreak);
   const [prevLongBreak, setPrevLongBreak] = useState(longBreak);
   const [prevLongBreakDelay, setPrevLongBreakDelay] = useState(longBreakDelay);
+  const [prevDailyGoal, setPrevDailyGoal] = useState(dailyGoal);
   const [prevMode, setPrevMode] = useState(alignment);
-  const [isInputFocused, setIsInputFocused] = useState(false);
-  console.log("modes", modes);
+  // const [isInputFocused, setIsInputFocused] = useState(false);
 
   useEffect(() => {
     setPrevPomodoro(pomodoro);
@@ -65,6 +86,10 @@ const TimerSettings = ({ handleClose }) => {
   }, [longBreakDelay]);
 
   useEffect(() => {
+    setPrevDailyGoal(dailyGoal);
+  }, [dailyGoal]);
+
+  useEffect(() => {
     setPrevMode(alignment);
   }, [alignment]);
 
@@ -77,21 +102,35 @@ const TimerSettings = ({ handleClose }) => {
   }, [selectedMode]);
 
   useEffect(() => {
+    const saveData = async () => {
+      if (isFieldChanged || isInputFocused) {
+        await saveSettings(
+          alignment,
+          prevMode,
+          prevPomodoro,
+          prevShortBreak,
+          prevLongBreak,
+          prevLongBreakDelay,
+          prevDailyGoal
+        );
+      }
+      await saveSelectedMode(alignment);
+    };
     if (!modesLoading) {
-      saveSettings(
-        alignment,
-        prevMode,
-        prevPomodoro,
-        prevShortBreak,
-        prevLongBreak,
-        prevLongBreakDelay
-      );
+      saveData();
     }
   }, [alignment]);
+
+  useEffect(() => {
+    if (!modesLoading) {
+      saveSettings(alignment);
+    }
+  }, [isAutoPomodoroChecked, isAutoBreakChecked]);
 
   const handleChange = (event, newAlignment) => {
     if (newAlignment !== null) {
       setAlignment(newAlignment);
+      handleClick("Mode has been changed: " + newAlignment);
       localStorage.setItem("mode", newAlignment);
       const currentMode =
         modes &&
@@ -103,23 +142,54 @@ const TimerSettings = ({ handleClose }) => {
       setShortBreak(currentMode?.short_break_duration);
       setLongBreak(currentMode?.long_break_duration);
       setLongBreakDelay(currentMode?.long_break_delay);
+      setDailyGoal(currentMode?.daily_goal);
+      setIsDisabled(currentMode?.is_disabled);
+
+      queueUpdate(
+        parseInt(pomodoro),
+        parseInt(shortBreak),
+        parseInt(longBreak)
+      );
+
+      if (!isActive && isDisabled) {
+        setPomodoroTime(currentMode?.pomodoro_duration);
+        setShortBreakTime(currentMode?.short_break_duration);
+        setLongBreakTime(currentMode?.long_break_duration);
+      }
+
+      if (!isPomodoro) {
+        setPomodoroTime(currentMode?.pomodoro_duration);
+      }
+      if (!isBreak) {
+        setShortBreakTime(currentMode?.short_break_duration);
+        setLongBreakTime(currentMode?.long_break_duration);
+      }
+
+      setInitialPomodoro(currentMode?.pomodoro_duration);
+      setInitialShortBreak(currentMode?.short_break_duration);
+      setInitialLongBreak(currentMode?.long_break_duration);
     }
   };
 
   const handlePomodoroChange = (e) => {
     setPomodoro(e.target.value * 60);
+    setIsFieldChanged(true);
   };
   const handleShortBreakTimeChange = (e) => {
     setShortBreak(e.target.value * 60);
+    setIsFieldChanged(true);
   };
   const handleLongBreakTimeChange = (e) => {
     setLongBreak(e.target.value * 60);
+    setIsFieldChanged(true);
   };
   const handleLongBreakDelayChange = (e) => {
     setLongBreakDelay(e.target.value);
+    setIsFieldChanged(true);
   };
   const handleDailyGoalChange = (e) => {
     setDailyGoal(e.target.value);
+    setIsFieldChanged(true);
   };
 
   const handleSubmit = async (event) => {
@@ -128,9 +198,11 @@ const TimerSettings = ({ handleClose }) => {
 
   const handleAutoPomodoro = (event) => {
     setIsAutoPomodoroChecked(event.target.checked);
+    handleClick("Settings: Changes saved");
   };
   const handleAutoBreak = (event) => {
     setIsAutoBreakChecked(event.target.checked);
+    handleClick("Settings: Changes saved");
   };
 
   const Modes = () => (
@@ -472,7 +544,12 @@ const TimerSettings = ({ handleClose }) => {
               id="outlined-basic"
               value={dailyGoal}
               onChange={handleDailyGoalChange}
-              onBlur={handleClose}
+              onFocus={() => {
+                setIsInputFocused(true);
+              }}
+              onBlur={() => {
+                setIsInputFocused(false);
+              }}
               variant="outlined"
               fullWidth={true}
               sx={{
@@ -484,16 +561,6 @@ const TimerSettings = ({ handleClose }) => {
             />
           </Box>
         </Box>
-        {/* <Box>
-                  <Typography
-                    variant="body1"
-                    color="initial"
-                    fontSize={12}
-                    marginLeft={34}
-                  >
-                    in minutes
-                  </Typography>
-                </Box> */}
       </Box>
 
       <Box
