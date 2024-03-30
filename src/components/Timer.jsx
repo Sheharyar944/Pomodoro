@@ -39,7 +39,6 @@ const Timer = () => {
     content = "Pomodoro";
   }
   const handleClick = () => {
-    // console.log("alignment:", alignment);
     toggle();
     saveSettings(alignment);
   };
@@ -195,7 +194,7 @@ const Timer = () => {
         })()}
       </Box>
       <Box>
-        {isDailyGoalReached && (
+        {isDailyGoalReached === true && (
           <Typography variant="body1" color="initial">
             success
           </Typography>

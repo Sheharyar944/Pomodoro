@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../components/AuthContext";
 import { TimerContext } from "../components/TimerContext";
 import axios from "axios";
+import { ModeComment } from "@mui/icons-material";
 
 const useGetSettings = () => {
   const { userDetails, user } = useContext(AuthContext);
@@ -49,6 +50,8 @@ const useGetSettings = () => {
     setPlayClockDuringBreak,
     notify,
     setNotify,
+    alignment,
+    setAlignment,
   } = useContext(TimerContext);
 
   const saveSettings = async (
@@ -107,6 +110,40 @@ const useGetSettings = () => {
     }
   };
 
+  const createNewMode = async (mode) => {
+    try {
+      const response = await axios.post(
+        `http://127.0.0.1:8000/pomodoro/${userDetails.id}/`,
+        {
+          settings_name: mode,
+          pomodoro_duration: pomodoro,
+          short_break_duration: shortBreak,
+          long_break_duration: longBreak,
+          long_break_delay: longBreakDelay,
+          is_pomodoro: isPomodoro,
+          pomodoro_count: isLongBreak.count,
+          is_long_break: isLongBreak.state,
+          is_break: isBreak,
+          daily_goal: dailyGoal,
+          auto_start_pomodoro: isAutoPomodoroChecked,
+          auto_start_break: isAutoBreakChecked,
+          is_selected: true,
+          current_time: pomodoro,
+          is_disabled: isDisabled,
+          alarm_sound: playAlarmSound,
+          ticking_sound: playClockSound,
+          ticking_sound_break: playClockDuringBreak,
+          one_min_notify: notify,
+          user: userDetails.id,
+        }
+      );
+      getModes();
+      console.log("New mode created:", response.data);
+    } catch (error) {
+      console.log("error creating mode", error);
+    }
+  };
+
   const saveSelectedMode = async (alignment) => {
     try {
       const response = await axios.post(
@@ -138,6 +175,7 @@ const useGetSettings = () => {
 
       setSelectedMode(selectedMode);
 
+      localStorage.setItem("mode", selectedMode.settings_name);
       localStorage.setItem("pomodoro", selectedMode.pomodoro_duration);
       localStorage.setItem("shortBreak", selectedMode.short_break_duration);
       localStorage.setItem("longBreak", selectedMode.long_break_duration);
@@ -205,7 +243,26 @@ const useGetSettings = () => {
     }
   };
 
+  const deleteSelectedMode = async () => {
+    try {
+      const response = await axios.delete(
+        `http://127.0.0.1:8000/pomodoro/${userDetails.id}/?settings_name=${alignment}`
+      );
+      console.log(
+        "Mode deleted successfully",
+        response.data.mode.settings_name
+      );
+      // setAlignment(response.data.mode.settings_name);
+      getModes();
+
+      return response;
+    } catch (error) {
+      console.log("Error deleting mode:", error);
+    }
+  };
+
   useEffect(() => {
+    console.log("i am");
     if (user) {
       getModes();
     }
@@ -214,11 +271,12 @@ const useGetSettings = () => {
   return {
     saveSettings,
     saveSelectedMode,
-    // getSettings,
     getModes,
     modes,
     selectedMode,
     loading,
+    deleteSelectedMode,
+    createNewMode,
   };
 };
 

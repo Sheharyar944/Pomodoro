@@ -57,7 +57,8 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 600,
+  width: 700,
+  height: 500,
   bgcolor: "background.paper",
   border: "1px solid #000",
   boxShadow: 24,
@@ -142,6 +143,7 @@ const SettingsModal = () => {
 
   const handleOpen = () => {
     setOpen(true);
+    document.body.classList.add("modal-open");
   };
   const handleClose = () => {
     queueUpdate(parseInt(pomodoro), parseInt(shortBreak), parseInt(longBreak));
@@ -163,6 +165,7 @@ const SettingsModal = () => {
     setInitialShortBreak(shortBreak);
 
     setOpen(false);
+    document.body.classList.remove("modal-open");
   };
 
   const handleChange = (event, newValue) => {
@@ -269,7 +272,7 @@ const SettingsModal = () => {
             </CustomTabPanel>
 
             <CustomTabPanel value={value} index={2}>
-              Item Three
+              <Box sx={{ height: "300px" }}>Work in progress</Box>
             </CustomTabPanel>
             <Box
               sx={{

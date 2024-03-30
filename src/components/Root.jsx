@@ -22,17 +22,11 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 const Root = () => {
   const navigate = useNavigate();
-  const logout = useLogout();
+
   const isLoggedIn = useIsLoggedIn();
-  const { userDetails } = useContext(AuthContext);
 
   const location = useLocation();
   const { pathname } = location;
-
-  const handleLogout = () => {
-    logout();
-    navigate("/");
-  };
 
   return (
     <Box>
@@ -55,16 +49,6 @@ const Root = () => {
         </Box>
 
         <Box sx={{ display: "flex" }}>
-          {/* {isLoggedIn && (
-            <Button
-              onClick={() => navigate(`/Profile/${userDetails.id}`)}
-              style={{ color: "black" }}
-            >
-              {userDetails.email}
-            </Button>
-          )} */}
-
-          {/* Stats button */}
           {pathname === "/stats" ? (
             <Box borderBottom={2} borderColor={"#6c6c79"}>
               <Button
@@ -226,6 +210,7 @@ const Root = () => {
           flexDirection: "column",
           height: "400px",
           justifyContent: "flex-end",
+          marginTop: "auto",
         }}
       >
         <Box sx={{ display: "flex", justifyContent: "center" }}>

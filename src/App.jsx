@@ -11,8 +11,8 @@ import Profile from "./pages/Profile";
 import Root from "./components/Root";
 import SettingsTabs from "./components/SettingsTabs";
 import ErrorPage from "./components/ErrorPage";
-import Stats from "./components/Stats";
-import Feedback from "./components/Feedback";
+import Stats from "./pages/Stats";
+import Feedback from "./pages/Feedback";
 import Register from "./pages/Register";
 import useIsLoggedIn from "./hooks/useIsLoggedIn";
 

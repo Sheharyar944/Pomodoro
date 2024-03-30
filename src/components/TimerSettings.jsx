@@ -1,15 +1,20 @@
-import React, { useRef, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import Box from "@mui/material/Box";
-import { Button, CircularProgress, TextField } from "@mui/material";
+import { CircularProgress, IconButton, TextField } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import MyToggle from "./MyToggle";
-import MyToggleButton from "./MyToggleButton";
 import { TimerContext } from "./TimerContext";
 import useGetSettings from "../hooks/useGetSettings";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
+import RemoveIcon from "@mui/icons-material/Remove";
+import ClearIcon from "@mui/icons-material/Clear";
+import ToolTip from "./ToolTip";
+
+import { grey } from "@mui/material/colors";
 
 const TimerSettings = ({ handleClick }) => {
   const {
@@ -59,7 +64,10 @@ const TimerSettings = ({ handleClick }) => {
     selectedMode,
     modes,
     loading: modesLoading,
+    deleteSelectedMode,
+    createNewMode,
   } = useGetSettings();
+
   const mode = localStorage.getItem("mode");
   const [prevPomodoro, setPrevPomodoro] = useState(pomodoro);
   const [prevShortBreak, setPrevShortBreak] = useState(shortBreak);
@@ -67,7 +75,12 @@ const TimerSettings = ({ handleClick }) => {
   const [prevLongBreakDelay, setPrevLongBreakDelay] = useState(longBreakDelay);
   const [prevDailyGoal, setPrevDailyGoal] = useState(dailyGoal);
   const [prevMode, setPrevMode] = useState(alignment);
-  // const [isInputFocused, setIsInputFocused] = useState(false);
+  const [addMode, setAddMode] = useState(false);
+  const [newMode, setNewMode] = useState("");
+  const [isCancelled, setIsCancelled] = useState(false);
+  const [clearMode, setClearMode] = useState(false);
+  const location = useLocation();
+  const { pathname } = location;
 
   useEffect(() => {
     setPrevPomodoro(pomodoro);
@@ -127,7 +140,14 @@ const TimerSettings = ({ handleClick }) => {
     }
   }, [isAutoPomodoroChecked, isAutoBreakChecked]);
 
+  useEffect(() => {
+    if (!modesLoading && !isInputFocused && isFieldChanged) {
+      saveSettings(alignment);
+    }
+  }, [isInputFocused]);
+
   const handleChange = (event, newAlignment) => {
+    setClearMode(false);
     if (newAlignment !== null) {
       setAlignment(newAlignment);
       handleClick("Mode has been changed: " + newAlignment);
@@ -192,6 +212,10 @@ const TimerSettings = ({ handleClick }) => {
     setIsFieldChanged(true);
   };
 
+  const handleNewModeChange = (event) => {
+    setNewMode(event.target.value);
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
   };
@@ -205,6 +229,38 @@ const TimerSettings = ({ handleClick }) => {
     handleClick("Settings: Changes saved");
   };
 
+  const handleDelete = () => {
+    setClearMode(false);
+    deleteSelectedMode();
+  };
+
+  const handleClearMode = () => {
+    setClearMode(true);
+  };
+
+  const handleIsCancelled = () => {
+    setIsCancelled(true);
+    setAddMode(false);
+  };
+
+  const handleCreateNewMode = (event) => {
+    const alreadyExists = modes.some(
+      (mode) => mode.settings_name === event.target.value
+    );
+    if (!alreadyExists) {
+      createNewMode(newMode);
+      setAddMode(false);
+    }
+    setIsInputFocused(false);
+    setAddMode(false);
+  };
+
+  const handleButtonMouseDown = (e) => {
+    if (isInputFocused) {
+      e.preventDefault();
+    }
+  };
+
   const Modes = () => (
     <Box>
       <ToggleButtonGroup
@@ -214,41 +270,196 @@ const TimerSettings = ({ handleClick }) => {
         onChange={handleChange}
         aria-label="Platform"
       >
-        {Array.isArray(modes) &&
-          modes.map((mode) => (
-            <ToggleButton
-              // onClick={handleButtonClick}
-              onMouseDown={handleButtonMouseDown}
-              // onMouseUp={handleButtonClick}
-              value={mode.settings_name}
-              key={mode.id}
+        <Box
+          // border={1}
+          sx={{ display: "flex", flexWrap: "wrap", justifyContent: "flex-end" }}
+        >
+          {Array.isArray(modes) &&
+            modes.map((mode) => (
+              <Box
+                // border={1}
+                sx={{
+                  display: "flex",
+                  margin: "5px",
+                  alignItems: "center",
+                  height: "35px",
+                  borderColor: "darkgrey",
+                  borderRadius: "5px",
+                }}
+                key={`1-${mode.id}`}
+              >
+                <ToggleButton
+                  sx={{
+                    height: "35px",
+                    fontSize: "12px",
+                    borderRadius: "0px",
+                  }}
+                  onMouseDown={handleButtonMouseDown}
+                  value={mode.settings_name}
+                  key={mode.id}
+                >
+                  {mode.settings_name} - {mode.pomodoro_duration / 60}{" "}
+                  {mode.short_break_duration / 60}{" "}
+                  {mode.long_break_duration / 60} {mode.long_break_delay}
+                </ToggleButton>
+
+                {mode.settings_name === alignment ? (
+                  clearMode ? (
+                    <ToolTip title={"Are you sure?"} placement={"top-end"}>
+                      <IconButton
+                        sx={{
+                          border: "1px solid #000",
+                          borderRadius: "0px",
+                          height: "35px",
+                          borderColor: "lightgray",
+                        }}
+                        onClick={handleDelete}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </ToolTip>
+                  ) : (
+                    <ToolTip title={"Delete"} placement={"top-end"}>
+                      <IconButton
+                        sx={{
+                          border: "1px solid #000",
+                          borderRadius: "0px",
+                          height: "35px",
+                          borderColor: "lightgray", // Add border style here
+                        }}
+                        onClick={handleClearMode}
+                      >
+                        <ClearIcon />
+                      </IconButton>
+                    </ToolTip>
+                  )
+                ) : null}
+              </Box>
+            ))}
+          {!addMode ? (
+            <Box
+              borderColor={grey}
+              sx={{
+                display: "flex",
+                height: "35px",
+                marginTop: "5px",
+              }}
             >
-              {mode.settings_name} - {mode.pomodoro_duration / 60}{" "}
-              {mode.short_break_duration / 60} {mode.long_break_duration / 60}{" "}
-              {mode.long_break_delay}
-            </ToggleButton>
-          ))}
+              <ToolTip title={"Add mode"} placement={"right-start"}>
+                <IconButton
+                  sx={{
+                    border: "1px solid #000",
+
+                    height: "35px",
+                    borderRadius: "0px",
+                    borderColor: "lightgray",
+                  }}
+                  onClick={() => {
+                    setAddMode(true);
+                    setIsInputFocused(true);
+                  }}
+                >
+                  <AddIcon fontSize="medium" />
+                </IconButton>
+              </ToolTip>
+            </Box>
+          ) : null}
+        </Box>
       </ToggleButtonGroup>
     </Box>
   );
 
-  const handleButtonMouseDown = (e) => {
-    if (isInputFocused) {
-      e.preventDefault(); // Prevent button from losing focus
+  const Text = ({ text }) => {
+    if (pathname === "/settings") {
+      return (
+        <Box>
+          <Typography
+            variant="body1"
+            color="initial"
+            fontSize={12}
+            marginLeft={64.5}
+          >
+            {text}
+          </Typography>
+        </Box>
+      );
+    } else {
+      return (
+        <Box>
+          <Typography
+            variant="body1"
+            color="initial"
+            fontSize={12}
+            marginLeft={40}
+          >
+            {text}
+          </Typography>
+        </Box>
+      );
     }
   };
 
-  useEffect(() => {
-    if (!modesLoading && !isInputFocused) {
-      saveSettings(alignment);
-    }
-  }, [isInputFocused]);
-
   return (
     <Box>
-      <Box display="flex" justifyContent="center" width="100%" p={2}>
-        {modesLoading ? <CircularProgress /> : <Modes />}
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        width="100%"
+        paddingBottom={2}
+      >
+        <Typography variant="body1" color="initial">
+          Modes:
+        </Typography>
+        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+          {modesLoading ? <CircularProgress /> : <Modes />}
+        </Box>
       </Box>
+
+      {addMode ? (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "flex-end",
+            alignItems: "center",
+          }}
+        >
+          <TextField
+            id="outlined-basic"
+            autoFocus
+            value={newMode}
+            autoComplete="off"
+            inputProps={{ maxLength: 20 }}
+            onChange={handleNewModeChange}
+            onFocus={() => {
+              setIsInputFocused(true);
+            }}
+            onBlur={handleCreateNewMode}
+            variant="outlined"
+            // fullWidth={true}
+            sx={{
+              "& input": {
+                padding: "5px",
+                margin: 0,
+              },
+            }}
+          />
+          <ToolTip title={"Cancel"} placement={"right-start"}>
+            <IconButton
+              sx={{
+                border: "1px solid #000",
+                borderRadius: "0px",
+                height: "35px",
+                borderColor: "lightgray",
+              }}
+              onClick={handleIsCancelled}
+              onMouseDown={(e) => e.preventDefault()}
+            >
+              <RemoveIcon fontSize="medium" />
+            </IconButton>
+          </ToolTip>
+        </Box>
+      ) : null}
 
       <Box
         sx={{
@@ -303,18 +514,8 @@ const TimerSettings = ({ handleClick }) => {
             />
           </Box>
         </Box>
-        <Box>
-          <Typography
-            variant="body1"
-            color="initial"
-            fontSize={12}
-            marginLeft={34}
-          >
-            in minutes
-          </Typography>
-        </Box>
       </Box>
-
+      <Text text="in minutes" />
       <Box
         sx={{
           display: "flex",
@@ -369,16 +570,7 @@ const TimerSettings = ({ handleClick }) => {
             />
           </Box>
         </Box>
-        <Box>
-          <Typography
-            variant="body1"
-            color="initial"
-            fontSize={12}
-            marginLeft={34}
-          >
-            in minutes
-          </Typography>
-        </Box>
+        <Text text="in minutes" />
       </Box>
       <Box
         sx={{
@@ -433,16 +625,7 @@ const TimerSettings = ({ handleClick }) => {
             />
           </Box>
         </Box>
-        <Box>
-          <Typography
-            variant="body1"
-            color="initial"
-            fontSize={12}
-            marginLeft={34}
-          >
-            in minutes
-          </Typography>
-        </Box>
+        <Text text="in minutes" />
       </Box>
       <Box
         sx={{
@@ -497,16 +680,7 @@ const TimerSettings = ({ handleClick }) => {
             />
           </Box>
         </Box>
-        <Box>
-          <Typography
-            variant="body1"
-            color="initial"
-            fontSize={12}
-            marginLeft={34}
-          >
-            in pomodoros
-          </Typography>
-        </Box>
+        <Text text="in pomodoros" />
       </Box>
       <Box
         sx={{

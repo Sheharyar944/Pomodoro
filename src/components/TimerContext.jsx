@@ -291,7 +291,6 @@ export const TimerContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    console.log("I am working");
     let audio = new Audio(soundURlClock);
     audio.loop = true;
     if (playSound && playClockSound && (isPomodoro || playClockDuringBreak)) {
@@ -362,7 +361,7 @@ export const TimerContextProvider = ({ children }) => {
   };
 
   const isDailyGoalReached = () => {
-    if (dailyGoal == isLongBreak) {
+    if (dailyGoal == isLongBreak.count) {
       return true;
     }
   };

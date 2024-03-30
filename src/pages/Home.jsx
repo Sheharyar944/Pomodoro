@@ -16,6 +16,7 @@ const Home = () => {
   const { saveSettings, loading } = useGetSettings();
 
   useEffect(() => {
+    console.log("i am ");
     if (user && !loading) {
       saveSettings(alignment);
     }
@@ -56,7 +57,7 @@ const Home = () => {
     <Box
       sx={{
         overflow: "auto",
-        padding: "20px",
+        // padding: "20px",
       }}
       display="flex"
       flexDirection="column"
