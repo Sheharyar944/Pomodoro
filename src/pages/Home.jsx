@@ -208,15 +208,6 @@ const Home = () => {
 
   const currentTask = pendingTasks && pendingTasks[pendingTasks.length - 1];
 
-  // useEffect(() => {
-  //   const time = totalTime();
-  //   const interval = setInterval(() => {
-  //     setFinishTime(time);
-  //   }, 1000);
-
-  //   return () => clearInterval(interval);
-  // }, []);
-
   return (
     <Box
       // border={1}
