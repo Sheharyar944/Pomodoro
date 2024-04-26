@@ -159,9 +159,9 @@ const useGetSettings = () => {
   };
 
   const getModes = async (userID = userDetails.id) => {
-    const pomodoroTime = localStorage.getItem("pomodoroTime");
-    const shortBreakTime = localStorage.getItem("shortBreakTime");
-    const longBreakTime = localStorage.getItem("longBreakTime");
+    const pomodoroTime = +localStorage.getItem("pomodoroTime");
+    const shortBreakTime = +localStorage.getItem("shortBreakTime");
+    const longBreakTime = +localStorage.getItem("longBreakTime");
 
     try {
       //   setLoading(true);
@@ -262,7 +262,6 @@ const useGetSettings = () => {
   };
 
   useEffect(() => {
-    console.log("i am");
     if (user) {
       getModes();
     }

@@ -208,7 +208,7 @@ const Root = () => {
         sx={{
           display: "flex",
           flexDirection: "column",
-          height: "400px",
+          height: "300px",
           justifyContent: "flex-end",
           marginTop: "auto",
         }}

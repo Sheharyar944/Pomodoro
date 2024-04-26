@@ -37,17 +37,17 @@ export const TimerContextProvider = ({ children }) => {
   const [isAutoBreakChecked, setIsAutoBreakChecked] = useState(
     localStorage.getItem("auto_start_break") === "true"
   );
-  const [pomodoro, setPomodoro] = useState(0);
-  const [shortBreak, setShortBreak] = useState(0);
-  const [longBreak, setLongBreak] = useState(0);
+  const [pomodoro, setPomodoro] = useState(25 * 60);
+  const [shortBreak, setShortBreak] = useState(5 * 60);
+  const [longBreak, setLongBreak] = useState(15 * 60);
   const [initialPomodoro, setInitialPomodoro] = useState(
-    parseInt(localStorage.getItem("initialPomodoro")) || 5
+    parseInt(localStorage.getItem("initialPomodoro")) || 25 * 60
   );
   const [initialShortBreak, setInitialShortBreak] = useState(
-    parseInt(localStorage.getItem("initialShortBreak")) || 3
+    parseInt(localStorage.getItem("initialShortBreak")) || 5 * 60
   );
   const [initialLongBreak, setInitialLongBreak] = useState(
-    parseInt(localStorage.getItem("initialLongBreak")) || 5
+    parseInt(localStorage.getItem("initialLongBreak")) || 15 * 60
   );
   const [updateQueue, setUpdateQueue] = useState([]);
   const [updateShortBreakQueue, setUpdateShortBreakQueue] = useState([]);
@@ -73,6 +73,7 @@ export const TimerContextProvider = ({ children }) => {
   );
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [isFieldChanged, setIsFieldChanged] = useState(false);
+  const [pomodoroDone, setPomodoroDone] = useState(false);
 
   useEffect(() => {
     // Exit early when we reach 0
@@ -93,10 +94,12 @@ export const TimerContextProvider = ({ children }) => {
               if (isAutoBreakChecked) {
                 if (playAlarmSound) playBell();
                 autoPomodoro();
+                setPomodoroDone(true);
                 return initialPomodoro;
               }
               if (playAlarmSound) playBell();
               autoOffPomodoro();
+              setPomodoroDone(true);
               return initialPomodoro;
             }
           });
@@ -447,11 +450,12 @@ export const TimerContextProvider = ({ children }) => {
         setNotify,
         setAlignment,
         alignment,
-        setAlignment,
         isInputFocused,
         setIsInputFocused,
         isFieldChanged,
         setIsFieldChanged,
+        pomodoroDone,
+        setPomodoroDone,
 
         queueUpdate,
         autoPomodoro,

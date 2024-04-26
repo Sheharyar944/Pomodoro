@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
-import { CircularProgress, IconButton, TextField } from "@mui/material";
+import { Button, CircularProgress, IconButton, TextField } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import MyToggle from "./MyToggle";
 import { TimerContext } from "./TimerContext";
@@ -13,7 +13,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import RemoveIcon from "@mui/icons-material/Remove";
 import ClearIcon from "@mui/icons-material/Clear";
 import ToolTip from "./ToolTip";
-
+import { AuthContext } from "./AuthContext";
 import { grey } from "@mui/material/colors";
 
 const TimerSettings = ({ handleClick }) => {
@@ -67,7 +67,7 @@ const TimerSettings = ({ handleClick }) => {
     deleteSelectedMode,
     createNewMode,
   } = useGetSettings();
-
+  const { user } = useContext(AuthContext);
   const mode = localStorage.getItem("mode");
   const [prevPomodoro, setPrevPomodoro] = useState(pomodoro);
   const [prevShortBreak, setPrevShortBreak] = useState(shortBreak);
@@ -81,6 +81,7 @@ const TimerSettings = ({ handleClick }) => {
   const [clearMode, setClearMode] = useState(false);
   const location = useLocation();
   const { pathname } = location;
+  const navigate = useNavigate();
 
   useEffect(() => {
     setPrevPomodoro(pomodoro);
@@ -247,7 +248,7 @@ const TimerSettings = ({ handleClick }) => {
     const alreadyExists = modes.some(
       (mode) => mode.settings_name === event.target.value
     );
-    if (!alreadyExists) {
+    if (!alreadyExists && event.target.value !== "") {
       createNewMode(newMode);
       setAddMode(false);
     }
@@ -258,6 +259,7 @@ const TimerSettings = ({ handleClick }) => {
   const handleButtonMouseDown = (e) => {
     if (isInputFocused) {
       e.preventDefault();
+      // setIsInputFocused(false);
     }
   };
 
@@ -292,7 +294,7 @@ const TimerSettings = ({ handleClick }) => {
                   sx={{
                     height: "35px",
                     fontSize: "12px",
-                    borderRadius: "0px",
+                    borderRadius: "5px",
                   }}
                   onMouseDown={handleButtonMouseDown}
                   value={mode.settings_name}
@@ -309,7 +311,7 @@ const TimerSettings = ({ handleClick }) => {
                       <IconButton
                         sx={{
                           border: "1px solid #000",
-                          borderRadius: "0px",
+                          borderRadius: "5px",
                           height: "35px",
                           borderColor: "lightgray",
                         }}
@@ -323,9 +325,9 @@ const TimerSettings = ({ handleClick }) => {
                       <IconButton
                         sx={{
                           border: "1px solid #000",
-                          borderRadius: "0px",
+                          borderRadius: "5px",
                           height: "35px",
-                          borderColor: "lightgray", // Add border style here
+                          borderColor: "lightgray",
                         }}
                         onClick={handleClearMode}
                       >
@@ -342,22 +344,23 @@ const TimerSettings = ({ handleClick }) => {
               sx={{
                 display: "flex",
                 height: "35px",
-                marginTop: "5px",
+                // marginTop: "5px",
               }}
             >
               <ToolTip title={"Add mode"} placement={"right-start"}>
                 <IconButton
                   sx={{
                     border: "1px solid #000",
-
                     height: "35px",
-                    borderRadius: "0px",
+                    borderRadius: "5px",
                     borderColor: "lightgray",
+                    margin: "5px",
                   }}
                   onClick={() => {
                     setAddMode(true);
                     setIsInputFocused(true);
                   }}
+                  onMouseDown={handleButtonMouseDown}
                 >
                   <AddIcon fontSize="medium" />
                 </IconButton>
@@ -401,20 +404,26 @@ const TimerSettings = ({ handleClick }) => {
 
   return (
     <Box>
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        width="100%"
-        paddingBottom={2}
-      >
-        <Typography variant="body1" color="initial">
-          Modes:
-        </Typography>
-        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-          {modesLoading ? <CircularProgress /> : <Modes />}
+      {user ? (
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          width="100%"
+          paddingBottom={2}
+        >
+          <Typography variant="body1" color="initial">
+            Modes:
+          </Typography>
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            {modesLoading ? <CircularProgress /> : <Modes />}
+          </Box>
         </Box>
-      </Box>
+      ) : (
+        <Button type="text" onClick={() => navigate("/login")}>
+          {`Click to Sign in for more settings`}
+        </Button>
+      )}
 
       {addMode ? (
         <Box
@@ -448,12 +457,12 @@ const TimerSettings = ({ handleClick }) => {
             <IconButton
               sx={{
                 border: "1px solid #000",
-                borderRadius: "0px",
+                borderRadius: "5px",
                 height: "35px",
                 borderColor: "lightgray",
               }}
               onClick={handleIsCancelled}
-              onMouseDown={(e) => e.preventDefault()}
+              onMouseDown={handleButtonMouseDown}
             >
               <RemoveIcon fontSize="medium" />
             </IconButton>

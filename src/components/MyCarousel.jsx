@@ -31,9 +31,11 @@ const MyCarousel = (props) => {
   ];
 
   return (
-    <Box>
+    <Box
+    //  border={1}
+    >
       <Carousel
-        sx={{ height: "500px", width: "850px" }}
+        sx={{ height: "400px", width: "850px" }}
         navButtonsAlwaysVisible={true}
         autoPlay={false}
         animation="slide"

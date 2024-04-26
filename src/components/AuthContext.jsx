@@ -15,17 +15,43 @@ export const AuthProvider = ({ children }) => {
     email: localStorage.getItem("email") || "",
   });
 
-  // Placeholder for login logic
   const setLoggedUser = (user) => {
     setUser(user);
   };
 
-  // Placeholder for logout logic
   const logout = () => {
-    // Implement your logout logic here
-    // After logout, reset the user state
     setUser(null);
     setUserDetails(null);
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("username");
+    localStorage.removeItem("id");
+    localStorage.removeItem("email");
+    localStorage.removeItem("pomodoro");
+    localStorage.removeItem("shortBreak");
+    localStorage.removeItem("longBreak");
+    localStorage.removeItem("long_break_delay");
+    localStorage.removeItem("isPomodoro");
+    localStorage.removeItem("count");
+    localStorage.removeItem("isLongBreak");
+    localStorage.removeItem("isBreak");
+    localStorage.removeItem("daily_goal");
+    localStorage.removeItem("auto_start_pomodoro");
+    localStorage.removeItem("auto_start_break");
+    localStorage.removeItem("initialPomodoro");
+    localStorage.removeItem("initialShortBreak");
+    localStorage.removeItem("initialLongBreak");
+    localStorage.removeItem("isDisabled");
+    localStorage.removeItem("isActive");
+    localStorage.removeItem("mode");
+    localStorage.removeItem("pomodoroTime");
+    localStorage.removeItem("shortBreakTime");
+    localStorage.removeItem("longBreakTime");
+    localStorage.removeItem("playAlarmSound");
+    localStorage.removeItem("playClockSound");
+    localStorage.removeItem("playClockDuringBreak");
+    localStorage.removeItem("notify");
+    localStorage.removeItem("playSound");
   };
 
   useEffect(() => {
@@ -57,6 +83,8 @@ export const AuthProvider = ({ children }) => {
         setLoggedUser(data);
         localStorage.setItem("access_token", data.access);
         localStorage.setItem("refresh_token", data.refresh);
+      } else {
+        logout();
       }
     } catch (error) {
       console.log("Error while refreshing token", error);

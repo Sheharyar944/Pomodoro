@@ -5,7 +5,7 @@ const useGetTasks = () => {
   const [tasks, setTasks] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const { userDetails } = useContext(AuthContext);
+  const { userDetails, user } = useContext(AuthContext);
 
   const getTasks = async () => {
     try {
@@ -27,10 +27,13 @@ const useGetTasks = () => {
   };
 
   useEffect(() => {
-    getTasks();
+    console.log("I am working");
+    if (user) {
+      getTasks();
+    }
   }, []);
 
-  return { tasks, error, loading };
+  return { tasks, error, loading, getTasks };
 };
 
 export default useGetTasks;

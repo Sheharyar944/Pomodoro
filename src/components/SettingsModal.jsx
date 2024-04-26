@@ -135,11 +135,11 @@ const SettingsModal = () => {
     setMessageInfo(undefined);
   };
 
-  useEffect(() => {
-    setPomodoro(initialPomodoro);
-    setShortBreak(initialShortBreak);
-    setLongBreak(initialLongBreak);
-  }, []);
+  // useEffect(() => {
+  //   setPomodoro(initialPomodoro);
+  //   setShortBreak(initialShortBreak);
+  //   setLongBreak(initialLongBreak);
+  // }, []);
 
   const handleOpen = () => {
     setOpen(true);

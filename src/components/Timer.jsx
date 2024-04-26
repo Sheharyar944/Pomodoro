@@ -8,7 +8,7 @@ import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArro
 import { TimerContext } from "./TimerContext";
 import useGetSettings from "../hooks/useGetSettings";
 
-const Timer = () => {
+const Timer = ({ task }) => {
   const {
     pomodoroTime,
     shortBreakTime,
@@ -26,6 +26,7 @@ const Timer = () => {
     isDailyGoalReached,
     formatTime,
     alignment,
+    setPomodoroDone,
   } = useContext(TimerContext);
   let content;
   const { saveSettings } = useGetSettings();
@@ -42,8 +43,9 @@ const Timer = () => {
     toggle();
     saveSettings(alignment);
   };
+
   return (
-    <Box width={750} border={1} marginTop={10} marginBottom={5}>
+    <Box width={850} border={1} marginTop={10} marginBottom={5}>
       <Box sx={{ display: "flex", justifyContent: "space-between" }}>
         <SettingsModal />
 
@@ -81,10 +83,22 @@ const Timer = () => {
           {formatTime(pomodoroTime, shortBreakTime, longBreakTime)}
         </Typography>
       </Box>
+      {task && task.description != "no description" ? (
+        <Box sx={{ display: "flex", justifyContent: "center", height: "20px" }}>
+          <Typography variant="body1" color="initial">
+            {task.description}
+          </Typography>
+        </Box>
+      ) : (
+        <Box sx={{ display: "flex", justifyContent: "center", height: "20px" }}>
+          <Typography variant="body1" color="initial"></Typography>
+        </Box>
+      )}
       <Box
+        // border={1}
         sx={{
           display: "flex",
-          marginTop: 3,
+          marginTop: 1,
           marginBottom: 5,
           justifyContent: "center",
         }}
@@ -100,7 +114,6 @@ const Timer = () => {
               borderWidth: 1,
               marginRight: 15,
               marginLeft: 15,
-
               borderColor: "black",
             }}
             variant="outlined"
@@ -171,7 +184,10 @@ const Timer = () => {
               <Button
                 // aria-disabled={isDisabled}
                 disabled={isDisabled}
-                onClick={autoPomodoro}
+                onClick={() => {
+                  setPomodoroDone(true);
+                  autoPomodoro();
+                }}
                 sx={{
                   width: "150px",
                   cursor: isDisabled ? "not-allowed" : "pointer",
