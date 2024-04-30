@@ -1,8 +1,7 @@
 import React from "react";
 import Carousel from "react-material-ui-carousel";
 import { Paper, Button, Typography, Box, ListItem } from "@mui/material";
-import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
-// import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
 
 const MyCarousel = (props) => {
   const items1 = [

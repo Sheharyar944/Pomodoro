@@ -30,14 +30,9 @@ const TimerSettings = ({ handleClick }) => {
     setShortBreak,
     longBreak,
     setLongBreak,
-    initialPomodoro,
     setInitialPomodoro,
-    initialShortBreak,
     setInitialShortBreak,
-    initialLongBreak,
     setInitialLongBreak,
-    playAlarmSound,
-    setPlayAlarmSound,
     queueUpdate,
 
     longBreakDelay,
@@ -259,7 +254,6 @@ const TimerSettings = ({ handleClick }) => {
   const handleButtonMouseDown = (e) => {
     if (isInputFocused) {
       e.preventDefault();
-      // setIsInputFocused(false);
     }
   };
 

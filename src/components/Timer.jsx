@@ -45,7 +45,13 @@ const Timer = ({ task }) => {
   };
 
   return (
-    <Box width={850} border={1} marginTop={10} marginBottom={5}>
+    <Box
+      width={850}
+      border={1}
+      marginTop={10}
+      marginBottom={5}
+      borderRadius={1.5}
+    >
       <Box sx={{ display: "flex", justifyContent: "space-between" }}>
         <SettingsModal />
 

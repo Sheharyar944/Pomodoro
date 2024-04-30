@@ -1,5 +1,3 @@
-// src/context/AuthContext.js
-import axios from "axios";
 import React, { createContext, useState, useEffect } from "react";
 
 export const AuthContext = createContext();
@@ -55,10 +53,6 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    // Check if the user is already logged in when the component mounts
-    // If yes, set the user state accordingly
-    // setUser({ ... });
-
     setLoading(false);
   }, []);
 

@@ -10,7 +10,6 @@ import NotificationSettings from "./NotificationSettings";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Box, Slide } from "@mui/material";
 import { TimerContext } from "./TimerContext";
-import useGetSettings from "../hooks/useGetSettings";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 
@@ -38,30 +37,13 @@ CustomTabPanel.propTypes = {
 
 const SettingsTabs = () => {
   const {
-    setPomodoroTime,
-    setShortBreakTime,
-    setLongBreakTime,
-    isActive,
-    isBreak,
-    isPomodoro,
-    isDisabled,
-    longBreakDelay,
-    setLongBreakDelay,
-    setDailyGoal,
     pomodoro,
     setPomodoro,
-    shortBreak,
     setShortBreak,
-    longBreak,
     setLongBreak,
     initialPomodoro,
-    setInitialPomodoro,
     initialShortBreak,
-    setInitialShortBreak,
     initialLongBreak,
-    setInitialLongBreak,
-    playAlarmSound,
-    setPlayAlarmSound,
     isInputFocused,
     isFieldChanged,
     setIsFieldChanged,
@@ -116,31 +98,6 @@ const SettingsTabs = () => {
   useEffect(() => {
     settingsMode();
   }, [value, pathname]);
-
-  // const handleClose = () => {
-  //   console.log("inputfield has lose focus");
-  //   queueUpdate(parseInt(pomodoro), parseInt(shortBreak), parseInt(longBreak));
-
-  //   if (!isActive && isDisabled) {
-  //     setPomodoroTime(pomodoro);
-  //     setShortBreakTime(shortBreak);
-  //     setLongBreakTime(longBreak);
-  //   }
-  //   if (!isPomodoro) {
-  //     setPomodoroTime(pomodoro);
-  //   }
-  //   if (!isBreak) {
-  //     setShortBreakTime(shortBreak);
-  //     setLongBreakTime(longBreak);
-  //   }
-
-  //   setInitialPomodoro(pomodoro);
-  //   setInitialLongBreak(longBreak);
-  //   setInitialShortBreak(shortBreak);
-
-  //   setLongBreakDelay(longBreakDelayValue);
-  //   setDailyGoal(dailyGoalValue);
-  // };
 
   const settingsMode = () => {
     if (pathname === "/settings/timer") {
@@ -213,36 +170,12 @@ const SettingsTabs = () => {
           </CustomTabPanel>
 
           <CustomTabPanel value={value} index={1}>
-            <NotificationSettings
-              playAlarmSound={playAlarmSound}
-              setPlayAlarmSound={setPlayAlarmSound}
-            />
+            <NotificationSettings handleClick={handleClick} />
           </CustomTabPanel>
 
           <CustomTabPanel value={value} index={2}>
             Item Three
           </CustomTabPanel>
-
-          {/* <Box>
-          <Button
-            onClick={() => {
-              handleClose();
-              navigate("/");
-            }}
-            style={{
-              color: "#232946",
-              paddingLeft: 50,
-              paddingRight: 50,
-              borderWidth: 1,
-              marginRight: 15,
-              marginLeft: 15,
-              borderColor: "black",
-            }}
-            variant="outlined"
-          >
-            Exit
-          </Button>
-        </Box> */}
         </Box>
       </Box>
     </Box>

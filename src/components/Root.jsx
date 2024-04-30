@@ -1,11 +1,9 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import Header from "../components/Header.jsx";
 import Divider from "@mui/material/Divider";
 import { Box, Button, Typography, IconButton } from "@mui/material";
 import useIsLoggedIn from "../hooks/useIsLoggedIn.jsx";
-import useLogout from "../hooks/useLogout.jsx";
-import { AuthContext } from "./AuthContext.jsx";
 import XIcon from "@mui/icons-material/X";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import RedditIcon from "@mui/icons-material/Reddit";
@@ -62,7 +60,7 @@ const Root = () => {
                   fontSize: "15px",
                   "&:hover": {
                     color: "black",
-                    backgroundColor: "white", // Change text color to black on hover
+                    backgroundColor: "white",
                   },
                 }}
               >
@@ -82,7 +80,7 @@ const Root = () => {
                   fontSize: "15px",
                   "&:hover": {
                     color: "black",
-                    backgroundColor: "white", // Change text color to black on hover
+                    backgroundColor: "white",
                   },
                 }}
               >
@@ -106,7 +104,7 @@ const Root = () => {
                   fontSize: "15px",
                   "&:hover": {
                     color: "black",
-                    backgroundColor: "white", // Change text color to black on hover
+                    backgroundColor: "white",
                   },
                 }}
               >
@@ -126,7 +124,7 @@ const Root = () => {
                   fontSize: "15px",
                   "&:hover": {
                     color: "black",
-                    backgroundColor: "white", // Change text color to black on hover
+                    backgroundColor: "white",
                   },
                 }}
               >
@@ -149,7 +147,7 @@ const Root = () => {
                   fontSize: "15px",
                   "&:hover": {
                     color: "black",
-                    backgroundColor: "white", // Change text color to black on hover
+                    backgroundColor: "white",
                   },
                 }}
               >
@@ -169,7 +167,7 @@ const Root = () => {
                   fontSize: "15px",
                   "&:hover": {
                     color: "black",
-                    backgroundColor: "white", // Change text color to black on hover
+                    backgroundColor: "white",
                   },
                 }}
               >
@@ -190,7 +188,7 @@ const Root = () => {
                 textTransform: "none",
                 "&:hover": {
                   color: "black",
-                  backgroundColor: "white", // Change text color to black on hover
+                  backgroundColor: "white",
                 },
               }}
             >
@@ -390,7 +388,6 @@ const Root = () => {
               textDecoration: "none",
               fontSize: "18px",
               fontFamily: "sans-serif",
-              // Add any other styles you want
             }}
           >
             Version 22.0.4
@@ -402,7 +399,6 @@ const Root = () => {
               textDecoration: "none",
               fontSize: "18px",
               fontFamily: "sans-serif",
-              // Add any other styles you want
             }}
           >
             Privacy Policy
@@ -414,7 +410,6 @@ const Root = () => {
               textDecoration: "none",
               fontSize: "18px",
               fontFamily: "sans-serif",
-              // Add any other styles you want
             }}
           >
             Terms and Conditions
@@ -426,7 +421,6 @@ const Root = () => {
               textDecoration: "none",
               fontSize: "18px",
               fontFamily: "sans-serif",
-              // Add any other styles you want
             }}
           >
             Slack Community
@@ -438,7 +432,6 @@ const Root = () => {
               textDecoration: "none",
               fontSize: "18px",
               fontFamily: "sans-serif",
-              // Add any other styles you want
             }}
           >
             dummy@gmail.com

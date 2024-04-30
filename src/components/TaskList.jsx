@@ -14,7 +14,6 @@ import useGetTasks from "../hooks/useGetTasks";
 import DoneIcon from "@mui/icons-material/Done";
 import { TimerContext } from "./TimerContext";
 import RepeatIcon from "@mui/icons-material/Repeat";
-import StarIcon from "@mui/icons-material/Star";
 import usePostTasks from "../hooks/usePostTasks";
 import ToolTip from "./ToolTip";
 
@@ -153,32 +152,6 @@ const TaskList = ({ task, refresh, setRefresh, index }) => {
 
   return (
     <Box>
-      {/* {task && task.remaining_pomodoros === 0 && index < dailyGoal ? (
-        <Divider style={{ width: "850px" }}>
-          {" "}
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              // border: "1px solid",
-              borderColor: "divider",
-              borderRadius: 2,
-              bgcolor: "background.paper",
-              color: "text.secondary",
-              "& svg": {
-                m: 1,
-              },
-            }}
-          >
-            <StarIcon fontSize="SMALL" />
-            <Typography variant="body1" color="initial" fontSize={10}>
-              Daily Goal
-            </Typography>
-          </Box>
-        </Divider>
-      ) : (
-        <Divider style={{ width: "850px" }} />
-      )} */}
       {index !== 0 && <Divider style={{ width: "850px" }} />}
 
       <Box

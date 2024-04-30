@@ -12,7 +12,7 @@ const Stats = () => {
       }}
     >
       <Typography variant="h2" color="initial">
-        Work in progress
+        Stats
       </Typography>
     </Box>
   );

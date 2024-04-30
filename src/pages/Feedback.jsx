@@ -12,7 +12,7 @@ const Feedback = () => {
       }}
     >
       <Typography variant="h2" color="initial">
-        Work in progress
+        Feedback
       </Typography>
     </Box>
   );

@@ -76,19 +76,11 @@ const SettingsModal = () => {
     isPomodoro,
     isDisabled,
     pomodoro,
-    setPomodoro,
     shortBreak,
-    setShortBreak,
     longBreak,
-    setLongBreak,
-    initialPomodoro,
     setInitialPomodoro,
-    initialShortBreak,
     setInitialShortBreak,
-    initialLongBreak,
     setInitialLongBreak,
-    playAlarmSound,
-    setPlayAlarmSound,
     queueUpdate,
     isInputFocused,
     isFieldChanged,
@@ -98,7 +90,6 @@ const SettingsModal = () => {
   const [value, setValue] = React.useState(0);
   const [open, setOpen] = React.useState(false);
   const { loading: modesLoading } = useGetSettings();
-  // const { user } = useContext(AuthContext);
   const [snackPack, setSnackPack] = useState([]);
   const [openSnack, setOpenSnack] = useState(false);
   const [messageInfo, setMessageInfo] = useState(undefined);
@@ -134,12 +125,6 @@ const SettingsModal = () => {
   const handleExited = () => {
     setMessageInfo(undefined);
   };
-
-  // useEffect(() => {
-  //   setPomodoro(initialPomodoro);
-  //   setShortBreak(initialShortBreak);
-  //   setLongBreak(initialLongBreak);
-  // }, []);
 
   const handleOpen = () => {
     setOpen(true);
@@ -272,7 +257,7 @@ const SettingsModal = () => {
             </CustomTabPanel>
 
             <CustomTabPanel value={value} index={2}>
-              <Box sx={{ height: "300px" }}>Work in progress</Box>
+              <Box sx={{ height: "300px" }}>Application</Box>
             </CustomTabPanel>
             <Box
               sx={{
